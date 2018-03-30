@@ -16,7 +16,7 @@ In the end, Alice got her investment back and earned 50ETH.
 
 ## Value proposition
 * Transparency to all participants
-* Well-written, tested and audited a SECURE smart contract
+* Well-written, tested and audited SECURE smart contract
 * First investors get most.
 * Last investors loose everything. Natural selection takes place.
 * Biggest value proposition is offered to the fund manager.
