@@ -1,4 +1,6 @@
-# Ponzi Fund - 0xeF0Ba96fdd17BA6b07c6B6D3e604EB307cd6C385
+# Ponzi Fund
+
+Contract address: 0xeF0Ba96fdd17BA6b07c6B6D3e604EB307cd6C385
 
 ## Intro
 A Ponzi fund is a fraudulent investment operation where the fund manager generates returns for older investors through revenue paid by new investors, rather than from legitimate business activities or profit of financial trading.
