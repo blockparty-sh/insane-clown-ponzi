@@ -2,6 +2,8 @@
 
 Contract address: 0xeF0Ba96fdd17BA6b07c6B6D3e604EB307cd6C385
 
+Medium article: (https://medium.com/@adrianbarwicki/ethereum-smart-ponzi-scheme-f0a11a419090)[Ethereum smart Ponzi scheme]
+
 ## Intro
 A Ponzi fund is a fraudulent investment operation where the fund manager generates returns for older investors through revenue paid by new investors, rather than from legitimate business activities or profit of financial trading.
 
@@ -13,6 +15,7 @@ Example:
 * Eric sends another 100 ETH to the fund. Alice and Bob receive 50% of it.
 
 In the end, Alice got her investment back and earned 50ETH.
+
 
 ## Value proposition
 * Transparency to all participants
