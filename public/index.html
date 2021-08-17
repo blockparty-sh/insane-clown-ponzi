@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Insane Clown Ponzi</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body class="">
+        <section>
+            <h1>Insane Clown Ponzi</h1>
+        </section>
+
+        <section>
+            <p>
+                <a href="help.html">Instructions / Help!</a>
+                <br>
+                <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>
+            </p>
+        </section>
+
+        <div id="account-information">
+            <div id="metamask-account"></div>
+            <div id="account-balance"></div>
+            <button id="connect-to-wallet">Open MetaMask</button>
+        </div>
+
+        <div id="modal">
+            <div id="modal-content">
+                <div id="modal-close">X</div>
+                <h2 id="modal-title"></h2>
+                <div>
+                    <p id="modal-text" class="breakable"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="incorrect-network">
+            Wrong network ID<br>
+            Change network to smartBCH<br>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.4.0/web3.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@truffle/contract@4.3.25/dist/truffle-contract.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/8.0.0/bignumber.min.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>

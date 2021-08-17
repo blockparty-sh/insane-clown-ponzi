@@ -1,17 +1,21 @@
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
-
+  contracts_build_directory: "./public/build",
   networks: {
     development: {
-      host: "127.0.0.1",
-      port: 8545,
-      network_id: 1
-    },
-    live: {
-      network_id: 2,
       host: "localhost",
-      port: 8546
+      port: 7545,
+      network_id: "*",
+    }
+  },
+  compilers: {
+    solc: {
+      version: "0.8.3",
+      settings: {
+        optimizer: {
+          enabled: true, // Default: false
+          runs: 200      // Default: 200
+        },
+      }
     }
   }
 };

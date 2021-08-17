@@ -1,71 +1,83 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.8.0;
 
 /// @title PonziFund
-///  @author adrianbarwicki
+/// @author adrianbarwicki
 contract PonziFund {
-    address public owner;
-    uint public total;
-    mapping (address => uint) public invested;
-    mapping (address => uint) public balances;
-    
+    address private _owner;
+    uint private _totalInvested;
+    mapping (address => uint) private _balances;
 
-    address[] investors;
+    mapping (address => uint) private _invested;
+    address[] private _investors;
 
-	function PonziFund() public {
-		owner = msg.sender;
-	}
-
-    // fund manager fee
-    function ownerFee(uint amount) private returns (uint fee) {
-        fee = amount / 10;
-        balances[owner] += fee;
-
-        return;
+    constructor () {
+        _owner = msg.sender;
     }
 
-    function withdraw() public
-    {
-        require(balances[msg.sender] != 0);
+    event Deposit(address account,  uint amount);
+    event Withdraw(address account, uint amount);
 
-        uint amount = balances[msg.sender];
-        balances[msg.sender] = 0;
-
-        if (!msg.sender.send(amount)) {
-            balances[msg.sender] = amount;
-        }
-    }
-
-    // fallback to accept funds
-	function () public payable
+    receive() external payable
     {
         uint dividend = msg.value;
+        uint fee = ownerFee(dividend);
+        dividend -= fee;
 
-        // first investment goes completely to the fund manager.
-        if (investors.length == 0) {
-            balances[owner] = msg.value;
+        if (_investors.length == 0) {
+            balances[msg.sender] = msg.value;
         } else {
-            uint fee = ownerFee(dividend);
-
-            dividend -= fee;
-        }
-        
-     
-         // distribute dividends
-         for (uint i = 0; i < investors.length; i++) {
-           if (balances[investors[i]] == 0) {
-                balances[investors[i]] = dividend * invested[investors[i]] / total;
-           } else {
-               balances[investors[i]] += dividend * invested[investors[i]] / total;
-           }
-         }
-
-        if (invested[msg.sender] == 0) {
-            investors.push(msg.sender);
-            invested[msg.sender] = msg.value;
-        } else {
-            invested[msg.sender] += msg.value;
+            balances[_owner] += fee;
         }
 
-        total += msg.value;
-	}
+        // distribute dividends
+        for (uint i = 0; i < _investors.length; i++) {
+           _balances[_investors[i]] += dividend * _invested[_investors[i]] / _totalInvested;
+        }
+
+        // 
+        // _invested[msg.sender] += dividend;
+        // _invested[_owner] += fee;
+        _invested[msg.sender] += msg.value;
+
+        // allow for iteration over invested
+        if (_invested[msg.sender] == 0) {
+            _investors.push(msg.sender);
+        }
+
+        _totalInvested += msg.value;
+
+        emit Deposit(msg.sender, msg.value);
+    }
+
+    function withdraw() external
+    {
+        require(_balances[msg.sender] > 0);
+
+        uint amount = _balances[msg.sender];
+        _balances[msg.sender] = 0;
+        payable(msg.sender).transfer(amount);
+
+        emit Withdraw(msg.sender, amount);
+    }
+
+    function owner() external view returns (address) {
+        return _owner;
+    }
+
+    function totalInvested() external view returns (uint) {
+        return _totalInvested;
+    }
+
+    function balanceOf(address account) external view returns (uint) {
+        return _balances[account];
+    }
+
+    function investedOf(address account) external view returns (uint) {
+        return _invested[account];
+    }
+
+    // fund manager fee 💰
+    function ownerFee(uint amount) internal pure returns (uint) {
+        return amount / 10;
+    }
 }

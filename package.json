@@ -1,0 +1,18 @@
+{
+  "name": "smartbch-ponzi-fund",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/blockparty-sh/smartbch-ponzi-fund",
+  "author": "blockparty <hello@blockparty.sh>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "lite-server"
+  },
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "truffle": "^5.4.6"
+  },
+  "dependencies": {
+    "truffle-assertions": "^0.9.2"
+  }
+}
