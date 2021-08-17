@@ -12,15 +12,15 @@ contract InsaneClownPonzi is ERC721 {
     Counters.Counter private _tokenIds;
 
     address private _owner; // defi owner receives 5% of all deposits
-    uint private _totalInvested; // how much people have funded icp
-    mapping (address => uint) private _bchBalances; // what is available for withdrawal
-    mapping (address => uint) private _clownPoints; // use clown points to claim clowns
-    mapping (address => uint) private _invested; // how much initially invested
+    uint256 private _totalInvested; // how much people have funded icp
+    mapping(address => uint256) private _bchBalances; // what is available for withdrawal
+    mapping(address => uint256) private _clownPoints; // use clown points to claim clowns
+    mapping(address => uint256) private _invested; // how much initially invested
     address[] private _investors; // for help with iteration
 
     // this is set by an advanced defi bonding curve
     // it determines cost of clown to buy with clownPoints
-    uint private _clownPrice = 1e16; // how much bch to create a clown
+    uint256 private _clownPrice = 1e16; // how much bch to create a clown
 
     // this is where clown icons reside like BASE_URI.id (concat)
     string constant BASE_URI = "ipfs whatever";
@@ -29,13 +29,12 @@ contract InsaneClownPonzi is ERC721 {
         _owner = msg.sender;
     }
 
-    event Deposit(address account,  uint amount);
-    event Withdraw(address account, uint amount);
+    event Deposit(address account, uint256 amount);
+    event Withdraw(address account, uint256 amount);
 
-    receive() external payable
-    {
-        uint dividend = msg.value;
-        uint totalFee = dividend / 10;
+    receive() external payable {
+        uint256 dividend = msg.value;
+        uint256 totalFee = dividend / 10;
         dividend -= totalFee;
 
         if (_investors.length == 0) {
@@ -48,14 +47,14 @@ contract InsaneClownPonzi is ERC721 {
                 _bchBalances[_owner] += totalFee;
                 _clownPoints[_owner] += totalFee;
             } else {
-                uint ownerFee = totalFee / 2;
-                uint totalClownFee = totalFee - ownerFee;
+                uint256 ownerFee = totalFee / 2;
+                uint256 totalClownFee = totalFee - ownerFee;
 
                 _bchBalances[_owner] += ownerFee;
                 _clownPoints[_owner] += ownerFee;
 
-                uint rewardPerClown = totalClownFee / totalSupply();
-                for (uint i = 0; i < totalSupply(); ++i) {
+                uint256 rewardPerClown = totalClownFee / totalSupply();
+                for (uint256 i = 0; i < totalSupply(); ++i) {
                     address clownOwner = ownerOf(i);
 
                     _bchBalances[clownOwner] += rewardPerClown;
@@ -65,10 +64,10 @@ contract InsaneClownPonzi is ERC721 {
         }
 
         // distribute dividends
-        for (uint i = 0; i < _investors.length; i++) {
-            uint payment = dividend * _invested[_investors[i]] / _totalInvested;
-           _bchBalances[_investors[i]] += payment;
-           _clownPoints[_investors[i]] += payment;
+        for (uint256 i = 0; i < _investors.length; i++) {
+            uint256 payment = (dividend * _invested[_investors[i]]) / _totalInvested;
+            _bchBalances[_investors[i]] += payment;
+            _clownPoints[_investors[i]] += payment;
         }
 
         // allow for iteration over invested
@@ -90,7 +89,7 @@ contract InsaneClownPonzi is ERC721 {
         _clownPrice += _clownPrice / 2021; // advanced tokenomics bonding curve
 
         _tokenIds.increment();
-        uint clownId = totalSupply();
+        uint256 clownId = totalSupply();
         _mint(msg.sender, clownId);
     }
 
@@ -98,7 +97,7 @@ contract InsaneClownPonzi is ERC721 {
     function withdraw() external {
         require(_bchBalances[msg.sender] > 0, "must have positive balance");
 
-        uint amount = _bchBalances[msg.sender];
+        uint256 amount = _bchBalances[msg.sender];
         _bchBalances[msg.sender] = 0;
         payable(msg.sender).transfer(amount);
 
@@ -109,23 +108,23 @@ contract InsaneClownPonzi is ERC721 {
         return _owner;
     }
 
-    function totalInvested() external view returns (uint) {
+    function totalInvested() external view returns (uint256) {
         return _totalInvested;
     }
 
-    function bchBalanceOf(address account) external view returns (uint) {
+    function bchBalanceOf(address account) external view returns (uint256) {
         return _bchBalances[account];
     }
 
-    function clownPointsOf(address account) external view returns (uint) {
+    function clownPointsOf(address account) external view returns (uint256) {
         return _clownPoints[account];
     }
 
-    function clownPrice() external view returns (uint) {
+    function clownPrice() external view returns (uint256) {
         return _clownPrice;
     }
 
-    function invested(address account) external view returns (uint) {
+    function invested(address account) external view returns (uint256) {
         return _invested[account];
     }
 
