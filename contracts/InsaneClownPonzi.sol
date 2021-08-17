@@ -84,20 +84,19 @@ contract InsaneClownPonzi is ERC721 {
     }
 
     // this is where defi clown birth occurs
-    function claimClowns() external {
-        while (_clownPoints[msg.sender] > clownPrice) {
-            _clownPoints[msg.sender] -= clownPrice;
-            _clownPrice *= 1.0005; // advanced tokenomics bonding curve
+    function claimClown() external {
+        require(_clownPoints[msg.sender] > _clownPrice, "insufficent clown points");
+        _clownPoints[msg.sender] -= _clownPrice;
+        _clownPrice += _clownPrice / 2021; // advanced tokenomics bonding curve
 
-            _tokenIds.increment();
-            uint clownId = totalSupply();
-            _mint(msg.sender, clownId);
-        }
+        _tokenIds.increment();
+        uint clownId = totalSupply();
+        _mint(msg.sender, clownId);
     }
 
     // retrieve bch earnings
     function withdraw() external {
-        require(_bchBalances[msg.sender] > 0);
+        require(_bchBalances[msg.sender] > 0, "must have positive balance");
 
         uint amount = _bchBalances[msg.sender];
         _bchBalances[msg.sender] = 0;

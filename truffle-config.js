@@ -8,6 +8,7 @@ module.exports = {
       gas: 6721975, //from ganache-cli output
     }
   },
+  plugins: ["solidity-coverage"],
   compilers: {
     solc: {
       version: "0.8.3",
