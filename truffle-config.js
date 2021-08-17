@@ -6,6 +6,7 @@ module.exports = {
       port: 7545,
       network_id: "*",
       gas: 6721975, //from ganache-cli output
+      gasPrice: 1050000000, // 1.05 gwei
     }
   },
   plugins: ["solidity-coverage"],

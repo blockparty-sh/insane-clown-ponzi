@@ -1,6 +1,6 @@
 const App = {
     web3Provider: null,
-    contract: null,
+    contracts: {},
     transactionParams: {
         gasPrice: "1050000000", // 10 gwei
     },
@@ -34,12 +34,12 @@ const App = {
         const InsaneClownPonzi = TruffleContract(InsaneClownPonziArtifact);
         InsaneClownPonzi.setProvider(this.web3Provider);
 
-        this.contract = await InsaneClownPonzi.deployed();
+        this.contracts.InsaneClownPonzi = InsaneClownPonzi;
 
         const that = this;
         // provide live update checking of selected network
         let lastNetworkId = null;
-        setInterval(async function() {
+        async function checkNetwork() {
             const SMARTBCH_NETWORK_ID         = 10000;
             const SMARTBCH_TESTNET_NETWORK_ID = 10001;
             const GANACHE_NETWORK_ID          = 5777;
@@ -62,14 +62,22 @@ const App = {
             }
 
             lastNetworkId = id;
-        }, 1000);
+        }
+        checkNetwork();
 
-        return this.bindEvents();
+        // detect Network account change
+        window.ethereum.on('networkChanged', (networkId) => {
+            checkNetwork();
+        });
+
+        return await this.bindEvents();
     },
 
     // set up base page to listen to events
-    bindEvents: function() {
+    bindEvents: async function() {
         const that = this;
+
+        const contract = await this.getContract();
 
         document.querySelector('#modal-close').addEventListener('click', function() {
             document.querySelector('body').classList.remove('modal-open');
@@ -77,14 +85,38 @@ const App = {
 
         document.getElementById('connect-to-wallet').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            this.updateDetails();
+            that.updateDetails();
+        });
+
+        document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+
+            const from = await that.getAccount();
+
+            const value = new BigNumber(document.getElementById('deposit-amount').value)
+                .multipliedBy(new BigNumber('1e18'))
+                .toFixed();
+
+			try {
+                await web3.eth.sendTransaction({
+                    ...that.transactionParams,
+                    ...{
+                        from,
+                        to: contract.address,
+                        value,
+                    },
+                });
+            } catch (e) {
+                console.error(e);
+            }
+
+            that.updateDetails();
         });
 
         document.getElementById('withdraw-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            this.updateDetails();
 
-			try {
+            try {
                 /*
 				const tx = await contract.withdraw(address, amount, {
 					...that.transactionParams,
@@ -96,15 +128,61 @@ const App = {
 			} catch (e) {
 				console.error(e);
             }
+
+            that.updateDetails();
         });
     },
 
     updateDetails: async function() {
         const account = await this.getAccount();
+        const contract = await this.getContract();
+
         if (account) {
             document.getElementById('metamask-account').innerHTML = account;
-            document.getElementById('account-balance').innerHTML = this.contract.balanceOf(account);
+            document.getElementById('account-balance').innerHTML = contract.balanceOf(account);
         }
+        
+        const bch_balance   = await contract.bchBalanceOf(account);
+        const clown_balance = await contract.balanceOf(account);
+        const clown_points  = await contract.clownPointsOf(account);
+        const invested      = await contract.invested(account);
+
+
+        const total_invested = await contract.totalInvested();
+        const clown_price    = await contract.clownPrice();
+        const total_clowns   = await contract.totalSupply();
+
+        const toBch = (v)         => new BigNumber(v.toString()).dividedBy('1e18');
+        const toClownPoints = (v) => toBch(v.toString()).multipliedBy(3976);
+
+        console.log('bch balance',    toBch(bch_balance.toString()).toString());
+        console.log('clown points',   toClownPoints(clown_points).toString());
+        console.log('invested',       toBch(invested).toString());
+        console.log('clown balance',  clown_balance.toString());
+
+        console.log('total invested', toBch(total_invested).toString());
+        console.log('clown price',    toClownPoints(clown_price).toString());
+        console.log('total clowns',   total_clowns.toString());
+
+    },
+
+    claimClown: async function() {
+        const account = await this.getAccount();
+        const contract = await this.getContract();
+
+        try {
+            const tx = await contract.claimClown({
+                ...this.transactionParams,
+                ...{
+                    from: account,
+                },
+            });
+
+            console.log(tx);
+        } catch (e) {
+            console.error(e);
+        }
+
     },
 
     // this can be used for error or information display
@@ -114,6 +192,12 @@ const App = {
 
         document.querySelector('body').classList.add('modal-open');
     },
+
+
+    getContract: async function() {
+        return this.contracts.InsaneClownPonzi.deployed();
+    },
+
 
     // this will either get the first account or will request wallet to prompt for access
     // this should be used everywhere that getting an account is needed, in case the
