@@ -1,11 +1,11 @@
-const PonziFund = artifacts.require('./PonziFund.sol');
+const InsaneClownPonzi = artifacts.require('./InsaneClownPonzi.sol');
 const truffleAssert = require('truffle-assertions');
 
-contract('PonziFund', function(accounts) {
+contract('InsaneClownPonzi', function(accounts) {
     let contract;
 
     beforeEach('setup contract for each test', async function () {
-        contract = await PonziFund.new({ from: accounts[0] });
+        contract = await InsaneClownPonzi.new({ from: accounts[0] });
     });
 
     it("has the right interface", async function() {
@@ -23,9 +23,9 @@ contract('PonziFund', function(accounts) {
             from: accounts[1],
         });
 
-        const invested1 = await contract.investedOf(accounts[1]);
-        const balances0 = await contract.balanceOf(accounts[0]);
-        let   balances1 = await contract.balanceOf(accounts[1]);
+        const invested1 = await contract.invested(accounts[1]);
+        const balances0 = await contract.bchBalanceOf(accounts[0]);
+        let   balances1 = await contract.bchBalanceOf(accounts[1]);
 
         assert.equal(invested1.toString(), web3.utils.toWei("1", "ether"));
 
@@ -40,7 +40,7 @@ contract('PonziFund', function(accounts) {
         });
 
 
-        balances1 = await contract.balanceOf(accounts[1]);
+        balances1 = await contract.bchBalanceOf(accounts[1]);
 
         assert.equal(balances1.toString(), web3.utils.toWei("0.9", "ether"));
     });
@@ -55,7 +55,7 @@ contract('PonziFund', function(accounts) {
             from: accounts[2]
         });
 
-        let balances0 = await contract.balanceOf(accounts[0]);
+        let balances0 = await contract.bchBalanceOf(accounts[0]);
         
         assert.equal(balances0.toString(), web3.utils.toWei("1.1", "ether"));
 
@@ -65,7 +65,7 @@ contract('PonziFund', function(accounts) {
 
         const endBalance = new web3.utils.BN(await web3.eth.getBalance(accounts[0]));
 
-        balances0 = await contract.balanceOf(accounts[0]);
+        balances0 = await contract.bchBalanceOf(accounts[0]);
         assert.equal(balances0.toString(), web3.utils.toWei("0", "ether"));
 
         assert.isTrue(startBalance.lt(endBalance));

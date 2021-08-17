@@ -1,7 +1,7 @@
 var Migrations = artifacts.require("./Migrations.sol");
-var PonziFund = artifacts.require("./PonziFund.sol");
+var InsaneClownPonzi = artifacts.require("./InsaneClownPonzi.sol");
 
 module.exports = function(deployer) {
     deployer.deploy(Migrations);
-    deployer.deploy(PonziFund);
+    deployer.deploy(InsaneClownPonzi);
 };

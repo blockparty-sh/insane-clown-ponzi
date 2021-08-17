@@ -28,13 +28,13 @@ const App = {
             web3 = new Web3(web3.currentProvider);
         }
 
-        const response = await fetch('build/PonziFund.json');
-        const PonziFundArtifact = await response.json();
+        const response = await fetch('build/InsaneClownPonzi.json');
+        const InsaneClownPonziArtifact = await response.json();
 
-        const PonziFund = TruffleContract(PonziFundArtifact);
-        PonziFund.setProvider(this.web3Provider);
+        const InsaneClownPonzi = TruffleContract(InsaneClownPonziArtifact);
+        InsaneClownPonzi.setProvider(this.web3Provider);
 
-        this.contract = await PonziFund.deployed();
+        this.contract = await InsaneClownPonzi.deployed();
 
         const that = this;
         // provide live update checking of selected network

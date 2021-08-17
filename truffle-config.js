@@ -5,6 +5,7 @@ module.exports = {
       host: "localhost",
       port: 7545,
       network_id: "*",
+      gas: 6721975, //from ganache-cli output
     }
   },
   compilers: {
