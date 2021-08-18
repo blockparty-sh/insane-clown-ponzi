@@ -2,12 +2,12 @@ pragma solidity ^0.8.0;
 
 // SPDX-License-Identifier: MIT
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 /// original ponzi implementation from adrianbarwicki
 /// https://github.com/adrianbarwicki/eth-ponzi-fund
-contract InsaneClownPonzi is ERC721 {
+contract InsaneClownPonzi is ERC721Enumerable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -104,6 +104,15 @@ contract InsaneClownPonzi is ERC721 {
         emit Withdraw(msg.sender, amount);
     }
 
+    function transfer(
+        address recipient,
+        uint256 tokenId
+    ) external {
+        require(ERC721._isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
+
+        ERC721._transfer(msg.sender, recipient, tokenId);
+    }
+
     function owner() external view returns (address) {
         return _owner;
     }
@@ -126,10 +135,6 @@ contract InsaneClownPonzi is ERC721 {
 
     function invested(address account) external view returns (uint256) {
         return _invested[account];
-    }
-
-    function totalSupply() public view returns (uint256) {
-        return _tokenIds.current();
     }
 
     function _baseURI() internal pure override returns (string memory) {

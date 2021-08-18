@@ -18,6 +18,36 @@
         </div>
         -->
 
+        <div id="header">
+
+            <!--
+            <div class="header-item">
+                <span id="metamask-account">0x97439fC7D8c898BCe1690300B131068A3E2bce42</span>
+            </div>
+            -->
+
+            <div class="header-item">
+                <span id="bch-balance">0.02819832</span>💰
+            </div>
+
+            <div class="header-item">
+                <span id="invested">0.1</span> 🏦
+            </div>
+
+            <div class="header-item">
+                <span id="clown-points">43292</span> 📊
+            </div>
+
+            <div class="header-item">
+                <span id="clown-balance">4</span> 🤡
+            </div>
+
+            <div class="header-item" style="margin: -0.5rem; margin-left: 1rem">
+                <span id="connect-to-wallet"><img src="img/connect-with-metamask.png"></span>
+            </div>
+        </div>
+
+
         <section>
             <h1>Insane Clown Ponzi 🤡</h1>
         </section>
@@ -30,16 +60,17 @@
             </p>
         </section>
 
-        <section>
+        <div id="deposit-pane">
             <input type="number" id="deposit-amount" value="0.01">
             <button id="deposit-btn">Deposit</button>
             <button id="withdraw-btn">Withdraw</button>
         </section>
 
-        <div id="account-information">
-            <div id="metamask-account"></div>
-            <div id="account-balance"></div>
-            <button id="connect-to-wallet">Open MetaMask</button>
+        <div id="total-stats-pane">
+            <h2>total stats</h2>
+            <div id="total-invested"></div>
+            <div id="clown-price"></div>
+            <div id="total-clowns"></div>
         </div>
 
         <div id="modal">

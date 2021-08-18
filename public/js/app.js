@@ -70,7 +70,8 @@ const App = {
             checkNetwork();
         });
 
-        return await this.bindEvents();
+        await this.bindEvents();
+        this.updateContractDetails();
     },
 
     // set up base page to listen to events
@@ -85,7 +86,7 @@ const App = {
 
         document.getElementById('connect-to-wallet').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            that.updateDetails();
+            that.updateUserDetails();
         });
 
         document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
@@ -110,7 +111,7 @@ const App = {
                 console.error(e);
             }
 
-            that.updateDetails();
+            that.updateUserDetails();
         });
 
         document.getElementById('withdraw-btn').addEventListener('click', async function(evt) {
@@ -129,41 +130,49 @@ const App = {
 				console.error(e);
             }
 
-            that.updateDetails();
+            that.updateUserDetails();
         });
     },
 
-    updateDetails: async function() {
+    toBch:         function (v) { return new BigNumber(v.toString()).dividedBy('1e18'); },
+    toClownPoints: function (v) { return this.toBch(v.toString()).multipliedBy(3976); },
+
+    updateUserDetails: async function() {
         const account = await this.getAccount();
         const contract = await this.getContract();
 
         if (account) {
-            document.getElementById('metamask-account').innerHTML = account;
-            document.getElementById('account-balance').innerHTML = contract.balanceOf(account);
+            this.updateElement('metamask-account', account);
+
+            const bch_balance   = await contract.bchBalanceOf(account);
+            const clown_balance = await contract.balanceOf(account);
+            const clown_points  = await contract.clownPointsOf(account);
+            const invested      = await contract.invested(account);
+
+            this.updateElement('bch-balance',   this.toBch(bch_balance.toString()).toString());
+            this.updateElement('clown-points',  this.toClownPoints(clown_points).toString());
+            this.updateElement('invested',      this.toBch(invested).toString());
+            this.updateElement('clown-balance', clown_balance.toString());
+
+            // TODO add clowns to pen
+            const clowns = [];
+            const clownCount = await contract.balanceOf(account);
+            for (let i=0; i<clownCount; ++i) {
+                console.log('clown index', await contract.tokenOfOwnerByIndex(account, i));
+            }
         }
+    },
+
+    updateContractDetails: async function() {
+        const contract = await this.getContract();
         
-        const bch_balance   = await contract.bchBalanceOf(account);
-        const clown_balance = await contract.balanceOf(account);
-        const clown_points  = await contract.clownPointsOf(account);
-        const invested      = await contract.invested(account);
-
-
         const total_invested = await contract.totalInvested();
         const clown_price    = await contract.clownPrice();
         const total_clowns   = await contract.totalSupply();
 
-        const toBch = (v)         => new BigNumber(v.toString()).dividedBy('1e18');
-        const toClownPoints = (v) => toBch(v.toString()).multipliedBy(3976);
-
-        console.log('bch balance',    toBch(bch_balance.toString()).toString());
-        console.log('clown points',   toClownPoints(clown_points).toString());
-        console.log('invested',       toBch(invested).toString());
-        console.log('clown balance',  clown_balance.toString());
-
-        console.log('total invested', toBch(total_invested).toString());
-        console.log('clown price',    toClownPoints(clown_price).toString());
-        console.log('total clowns',   total_clowns.toString());
-
+        this.updateElement('total-invested', this.toBch(total_invested).toString());
+        this.updateElement('clown-price',    this.toClownPoints(clown_price).toString());
+        this.updateElement('total-clowns',   total_clowns.toString());
     },
 
     claimClown: async function() {
@@ -187,8 +196,8 @@ const App = {
 
     // this can be used for error or information display
     showModal: function(title, content) {
-        document.getElementById('modal-title').innerHTML = title;
-        document.getElementById('modal-text').innerHTML = content;
+        this.updateElement('modal-title', title);
+        this.updateElement('modal-text', content);
 
         document.querySelector('body').classList.add('modal-open');
     },
@@ -225,6 +234,17 @@ const App = {
     toggleFormDisabled: function(disabled) {
         document.querySelectorAll('button').forEach((el) => el.disabled = disabled);
         document.querySelectorAll('input').forEach((el) => el.disabled = disabled);
+    },
+
+    // helper
+    updateElement: function(htmlId, innerHTML) {
+        const el = document.getElementById(htmlId);
+        if (! el) {
+            console.warn(`${htmlId} does not exist for updateElement`);
+            return;
+        }
+
+        el.innerHTML = innerHTML;
     },
 };
 
