@@ -117,6 +117,88 @@ const App = {
             });
         }
 
+        // HEADER ITEMS
+        document.getElementById('help-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            that.showModal('Help', `<div class="scrollable-wrapper">
+                <h2>Introduction / What is a Ponzi?</h2>
+                <p>Hello and welcome to Insane Clown Ponzi, the first Ponzi DeFI NFT dApp on smartBCH.</p>
+
+                <h2>How do I make money with this?</h2>
+                <p>You must deposit BCH, at this point the BCH is distributed to all others who have invested in the ponzi before you. Also, a 10% fee is applied, of which 5% is distributed amongst all 🤡 and the other 5% is sent to the first who invested in the ponzi.</p>
+
+                <p>When others invest in the Ponzi scheme, you will receive a cut of their deposit proportional to your investment in the Ponzi compared to the total Ponzi size, as well as 🧠. This provides an incentive for you to convince others that this is a good idea. Your balance can be withdrawn at any time by clicking the "WITHDRAW" button. There is no minimum to withdraw, and this will not affect your 🧠.</p>
+
+                <p>Once you save enough brain you can start claiming 🤡. The 🤡 will appear in your tent and start dancing. The 🤡 receive 50% of the fees, so if you want to make the most money you will want to claim your 🤡 right away. Another added benefit, is that by the introduction of a collectible NFT into this Ponzi scheme, it allows others to speculate on the ponzi scheme's fees without actually investing in the Ponzi scheme itself, only by buying 🤡 on the secondary market. This innovation is only possible with really smart contracts.</p>
+
+                <h2>Interface</h2>
+                <p></p>
+
+                <h2>Clown Bonding Curve</h2>
+                <p>Clown supply is limited by the amount of 🧠 one is able to acquire, and the price of 🤡 increases by 1/2021 each time one is purchased. </p>
+
+                <h2>Buying Clowns</h2>
+                <h2>Selling Clowns</h2>
+            </div>`);
+        });
+
+        const player = document.getElementById('bg-audio-player');
+        if (player.paused) {
+            document.getElementById('audio-item').innerHTML = '🔇';
+        }
+        document.getElementById('audio-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+
+            if (player.paused) {
+                document.getElementById('audio-item').innerHTML = '🔈';
+                player.play();
+            } else {
+                document.getElementById('audio-item').innerHTML = '🔇';
+                player.pause();
+            }
+        });
+
+        document.getElementById('source-code-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            that.showModal('Source Code', `
+                <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>
+            `);
+        });
+        document.getElementById('bch-balance-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            that.showModal('Earnings', 'llaalalala');
+        });
+
+        document.getElementById('invested-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            that.showModal('Invested', 'llaalalala');
+        });
+
+        document.getElementById('clown-points-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            that.showModal('Brain Power', 'llaalalala');
+        });
+
+        document.getElementById('clown-balance-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            let html = '<div class="scrollable-wrapper">';
+            that.clowns.forEach((clown) => {
+                html += `
+                    <div class="scrollable-row">
+                        <div class="scrollable-col">
+                            <span class="clown-name">${clown.name}</span><br>
+                            <span class="clown-quote">${clown.quote}</span>
+                        </div>
+                        <div class="scrollable-col align-right">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/079-clown-face.svg/1200px-079-clown-face.svg.png" class="clown-image">
+                        </div>
+                    </div>`;
+            });
+            html += '</table></div>';
+            that.showModal('Your 🤡 Collection', html);
+        });
+
+        // FORM BUTTONS
         document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
 
@@ -256,12 +338,15 @@ const App = {
             const x = (Math.random() * this.TENT_SIZE) | 0;
             const y = (Math.random() * this.TENT_SIZE) | 0;
             const r = Math.random() * Math.PI * 2;
+            const name = "BOZO";
+            const quote = "The purpose of our lives is to be happy";
+            const picture = "";
 
             const el = document.createElement('span');
             el.classList.add('clown');
 
             document.getElementById('clown-tent').appendChild(el);
-            this.clowns.push({tokenId, x, y, r});
+            this.clowns.push({tokenId, x, y, r, name, quote, picture});
         }
     },
 

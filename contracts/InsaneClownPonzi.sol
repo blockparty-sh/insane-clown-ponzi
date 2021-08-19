@@ -33,6 +33,8 @@ contract InsaneClownPonzi is ERC721Enumerable {
     event Withdraw(address account, uint256 amount);
 
     receive() external payable {
+        require(msg.value > 1e15, "ICP: Minimum value not met");
+
         uint256 dividend = msg.value;
         uint256 totalFee = dividend / 10;
         dividend -= totalFee;
@@ -84,7 +86,7 @@ contract InsaneClownPonzi is ERC721Enumerable {
 
     // this is where defi clown birth occurs
     function claimClown() external {
-        require(_clownPoints[msg.sender] > _clownPrice, "insufficent clown points");
+        require(_clownPoints[msg.sender] > _clownPrice, "ICP: Insufficent clown points");
         _clownPoints[msg.sender] -= _clownPrice;
         _clownPrice += _clownPrice / 2021; // advanced tokenomics bonding curve
 
@@ -95,7 +97,7 @@ contract InsaneClownPonzi is ERC721Enumerable {
 
     // retrieve bch earnings
     function withdraw() external {
-        require(_bchBalances[msg.sender] > 0, "must have positive balance");
+        require(_bchBalances[msg.sender] > 0, "ICP: Must have positive balance");
 
         uint256 amount = _bchBalances[msg.sender];
         _bchBalances[msg.sender] = 0;
