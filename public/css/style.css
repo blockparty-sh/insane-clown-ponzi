@@ -1,8 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:900i');
+@import url('https://rsms.me/inter/inter.css');
+
+:root {
+    --color-light: white;
+    --color-dark: #212121;
+    --color-signal: #fab700;
+    --color-background: var(--color-light);
+    --color-text: var(--color-dark);
+    --color-accent: var(--color-signal);
+    --size-bezel: 0.5rem;
+    line-height: 1.4;
+    font-family: 'Inter', sans-serif;
+    font-size: calc(.6rem + .4vw);
+    color: var(--color-text);
+    background: var(--color-background);
+    font-weight: 300;
+}
+
 body {
     font: 1.3rem sans-serif;
     font-family: 'Noto Sans JP', sans-serif;
     padding: 0;
     margin: 0;
+    background-size: cover;
+    height: 100vh;
+    background-image: url(https://wallpaperaccess.com/full/181362.jpg);
 }
 
 a {
@@ -19,10 +41,10 @@ a:hover {
 
 .modal-open #modal {
     position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
+    top: -100px;
+    left: -100px;
+    width: 120%;
+    height: 120%;
     background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(1px);
 
@@ -113,6 +135,21 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.8rem;
+    background-color: #23222b;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease-in-out;
+    cursor: pointer;
+}
+
+.header-item:hover {
+    background-color: #33313f
+}
+
+.header-item span {
+    color: #fafafa;
+    font-size: 1.2rem;
 }
 
 #connect-to-wallet {
@@ -121,4 +158,268 @@ a:hover {
 
 #connect-to-wallet img {
     height: 3rem;
+}
+
+#clown-tent {
+    background-color: #ccc;
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    left: calc(50vw - 400px / 2);
+    top: 400px;
+
+}
+
+.clown {
+    position: absolute;
+    top:0px;
+    left:0px;
+}
+
+.clown::after {
+    content: '🤡';
+}
+
+.pane {
+    z-index: 100;
+}
+
+.pane:hover {
+    z-index: 110!important;
+}
+
+#deposit-pane {
+    z-index: 100;
+    position: absolute;
+    top: 150px;
+    left: 50px;
+
+    width: 500px;
+}
+
+#deposit-pane .card {
+    transform: skew(0deg, 1deg);
+}
+
+#withdraw-pane {
+    z-index: 100;
+    position: absolute;
+    top: 550px;
+    left: 90px;
+
+    width: 500px;
+}
+
+#claim-clown-pane {
+    z-index: 100;
+    position: absolute;
+    top: 520px;
+    right: 50px;
+
+    width: 500px;
+}
+
+#claim-clown-pane .card {
+    transform: skew(-1deg, 1deg);
+}
+
+
+#total-stats-pane {
+    z-index: 100;
+    position: absolute;
+    top: 210px;
+    right: 100px;
+
+    width: 500px;
+}
+
+#title-pane {
+    z-index: 101;
+    position: absolute;
+    top: 60px;
+    left: calc(50vw - 700px / 2);
+
+    width: 700px;
+}
+
+#title-pane .card {
+    transform: skew(0deg, 0.5deg);
+}
+
+
+
+/* from https://codepen.io/folaad/pen/YvmRpz */
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn {
+    display: flex;
+    padding: 10px 45px;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    color: white;
+    background: #6225E6;
+    transition: 1s;
+    box-shadow: 6px 6px 0 black;
+    transform: skewX(-15deg);
+}
+
+.btn:focus {
+   outline: none;
+}
+
+.btn:hover {
+    transition: 0.5s;
+    box-shadow: 10px 10px 0 #FBC638;
+}
+
+.btn span:nth-child(2) {
+    transition: 0.5s;
+    margin-right: 0px;
+}
+
+.btn:hover  span:nth-child(2) {
+    transition: 0.5s;
+    margin-right: 45px;
+}
+
+.btn span {
+    transform: skewX(15deg)
+}
+
+.btn span:nth-child(2) {
+    width: 20px;
+    margin-left: 30px;
+    position: relative;
+    top: 12%;
+}
+
+/**************SVG****************/
+
+.btn path.one {
+    transition: 0.4s;
+    transform: translateX(-60%);
+}
+
+.btn:hover path.one {
+    transform: translateX(0%);
+    animation: color_anim 1s infinite 0.6s;
+}
+
+/* SVG animations */
+
+@keyframes color_anim {
+    0% {
+        fill: white;
+    }
+    50% {
+        fill: #FBC638;
+    }
+    100% {
+        fill: white;
+    }
+}
+
+
+
+
+
+h1, h2, h3 {
+    font-weight: 900;
+}
+mark {
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-weight: bold;
+    padding: 0 0.2em;
+}
+.card {
+    background: var(--color-background);
+    padding: calc(4 * var(--size-bezel));
+    margin-top: calc(4 * var(--size-bezel));
+    border-radius: 0;
+    border: 2px solid #333;
+    box-shadow: 3px 3px 3px rgba(33, 33, 33, 0.4);
+    transform: skew(1deg, -1deg);
+}
+.card--inverted {
+    --color-background: var(--color-dark);
+    color: var(--color-light);
+    --color-shadow: var(--color-accent);
+}
+.card--accent {
+    --color-background: var(--color-signal);
+    --color-accent: var(--color-light);
+    color: var(--color-dark);
+}
+.card *:first-child {
+    margin-top: 0;
+}
+.l-design-widht {
+    max-width: 40rem;
+    padding: 1rem;
+}
+.input {
+    position: relative;
+}
+.input__label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: calc(var(--size-bezel) * 0.75) calc(var(--size-bezel) * .5);
+    margin: calc(var(--size-bezel) * 0.75 + 3px) calc(var(--size-bezel) * .5);
+    background: pink;
+    white-space: nowrap;
+    transform: translate(0, 0);
+    transform-origin: 0 0;
+    background: var(--color-background);
+    transition: transform 120ms ease-in;
+    font-weight: bold;
+    line-height: 1.2;
+}
+.input__field {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    border: 3px solid currentColor;
+    padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
+    color: currentColor;
+    background: transparent;
+    border-radius: var(--size-radius);
+    font-size: 22px;
+}
+.input__field:focus + .input__label, .input__field:not(:placeholder-shown) + .input__label {
+    transform: translate(0.25rem, -65%) scale(0.8);
+    color: var(--color-accent);
+}
+.button-group {
+    margin-top: calc(var(--size-bezel) * 2.5);
+}
+button {
+    color: currentColor;
+    padding: var(--size-bezel) calc(var(--size-bezel) * 2);
+    background: var(--color-accent);
+    border: none;
+    border-radius: var(--size-radius);
+    font-weight: 900;
+}
+button[type=reset] {
+    background: var(--color-background);
+    font-weight: 200;
+}
+button + button {
+    margin-left: calc(var(--size-bezel) * 2);
+}
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+}
+.hidden {
+    display: none;
 }

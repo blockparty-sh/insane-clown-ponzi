@@ -4,22 +4,39 @@ const App = {
     transactionParams: {
         gasPrice: "1050000000", // 10 gwei
     },
+    clowns: [],
+    TENT_SIZE: 300,
 
     init: async function() {
+        const connectToWalletEl = document.getElementById('connect-to-wallet');
+
         if (typeof web3 === 'undefined') {
-            this.showModal('Install MetaMask', `
-                <p>
-                This app requires MetaMask to be installed
-                </p>
+            function promptMetamaskInstall() {
+                App.showModal('Install MetaMask', `
+                    <p>
+                    This app requires MetaMask to be installed
+                    </p>
 
-                <p>
-                Download from <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">Chrome Web Store</a>
-                </p>
+                    <p>
+                    Download from <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">Chrome Web Store</a>
+                    </p>
 
-                <p>
-                Download from <a href="https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/" target="_blank">Firefox Add-ons page</a>
-                </p>
-            `);
+                    <p>
+                    Download from <a href="https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/" target="_blank">Firefox Add-ons page</a>
+                    </p>
+                `);
+            }
+            promptMetamaskInstall();
+
+            connectToWalletEl
+                .querySelector('img')
+                .src = 'img/install-metamask.png';
+            
+            connectToWalletEl.addEventListener('click', function(evt) {
+                evt.preventDefault();
+                promptMetamaskInstall();
+            });
+
             // fallback to ganache
             this.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
             web3 = new Web3(this.web3Provider);
@@ -65,29 +82,40 @@ const App = {
         }
         checkNetwork();
 
-        // detect Network account change
-        window.ethereum.on('networkChanged', (networkId) => {
-            checkNetwork();
-        });
-
-        await this.bindEvents();
-        this.updateContractDetails();
-    },
-
-    // set up base page to listen to events
-    bindEvents: async function() {
-        const that = this;
 
         const contract = await this.getContract();
+        this.updateContractDetails();
+
 
         document.querySelector('#modal-close').addEventListener('click', function() {
             document.querySelector('body').classList.remove('modal-open');
         });
 
-        document.getElementById('connect-to-wallet').addEventListener('click', async function(evt) {
-            evt.preventDefault();
+        if (! window.ethereum) {
+            return;
+        }
+
+        // detect Network account change
+        window.ethereum.on('chainChanged', (networkId) => {
+            checkNetwork();
             that.updateUserDetails();
         });
+
+        window.ethereum.on('accountChanged', (networkId) => {
+            that.updateUserDetails();
+        });
+
+        if (window.ethereum.isConnected()) {
+            connectToWalletEl
+                .querySelector('img')
+                .style.display = 'none';
+            that.updateUserDetails();
+        } else {
+            connectToWalletEl.addEventListener('click', async function(evt) {
+                evt.preventDefault();
+                that.updateUserDetails();
+            });
+        }
 
         document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
@@ -116,22 +144,63 @@ const App = {
 
         document.getElementById('withdraw-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
+            const account = await that.getAccount();
 
             try {
-                /*
-				const tx = await contract.withdraw(address, amount, {
+				const tx = await contract.withdraw({
 					...that.transactionParams,
 					...{
 						from: account,
 					},
 				});
-                */
 			} catch (e) {
 				console.error(e);
             }
 
             that.updateUserDetails();
         });
+
+        document.getElementById('claim-clown-btn').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+            const account = await that.getAccount();
+
+            try {
+				const tx = await contract.claimClown({
+					...that.transactionParams,
+					...{
+						from: account,
+					},
+				});
+			} catch (e) {
+				console.error(e);
+            }
+
+            that.updateContractDetails();
+            that.updateUserDetails();
+        });
+
+
+
+        // update clown tent
+        // TODO move this somewhere better
+        setInterval(function() {
+            document.querySelectorAll('#clown-tent .clown').forEach((clownEl, i) => {
+                const clamp = (v) => Math.min(Math.max(v, 30), that.TENT_SIZE-30);
+
+                that.clowns[i].x += ((Math.random() - 0.5) * 10) | 0;
+                that.clowns[i].y += ((Math.random() - 0.5) * 10) | 0;
+                that.clowns[i].r += (Math.random() - 0.5) * 0.1;
+
+                that.clowns[i].x = clamp(that.clowns[i].x);
+                that.clowns[i].y = clamp(that.clowns[i].y);
+
+                if (Math.random() < 0.01) {
+                    that.clowns[i].r += (Math.random() - 0.5) * Math.PI;
+                }
+
+                clownEl.style.transform = `translate(${that.clowns[i].x}px,${that.clowns[i].y}px) rotate(${that.clowns[i].r}rad)`;
+            });
+        }, 100);
     },
 
     toBch:         function (v) { return new BigNumber(v.toString()).dividedBy('1e18'); },
@@ -141,25 +210,58 @@ const App = {
         const account = await this.getAccount();
         const contract = await this.getContract();
 
-        if (account) {
-            this.updateElement('metamask-account', account);
+        if (! account) {
+            return;
+        }
 
-            const bch_balance   = await contract.bchBalanceOf(account);
-            const clown_balance = await contract.balanceOf(account);
-            const clown_points  = await contract.clownPointsOf(account);
-            const invested      = await contract.invested(account);
+        this.updateElement('metamask-account', account);
 
-            this.updateElement('bch-balance',   this.toBch(bch_balance.toString()).toString());
-            this.updateElement('clown-points',  this.toClownPoints(clown_points).toString());
-            this.updateElement('invested',      this.toBch(invested).toString());
-            this.updateElement('clown-balance', clown_balance.toString());
+        const bch_balance   = await contract.bchBalanceOf(account);
+        const clown_balance = await contract.balanceOf(account);
+        const clown_points  = await contract.clownPointsOf(account);
+        const invested      = await contract.invested(account);
 
-            // TODO add clowns to pen
-            const clowns = [];
-            const clownCount = await contract.balanceOf(account);
-            for (let i=0; i<clownCount; ++i) {
-                console.log('clown index', await contract.tokenOfOwnerByIndex(account, i));
-            }
+        this.updateElement('bch-balance',   Number.parseFloat(this.toBch(bch_balance.toString()).toFixed(4)));
+        this.updateElement('clown-points',  Number.parseFloat(this.toClownPoints(clown_points).toFixed(4)));
+        this.updateElement('invested',      Number.parseFloat(this.toBch(invested).toFixed(4)));
+        this.updateElement('clown-balance', clown_balance.toString());
+
+        // withdraw pane
+        if (new BigNumber(bch_balance).isGreaterThan(0)) {
+            this.updateElement('withdraw-message', `You can withdraw <strong>${this.toBch(bch_balance.toString()).toString()} BCH</strong> now`);
+            document.getElementById('withdraw-btn').disabled = false;
+        } else {
+            this.updateElement('withdraw-message', '');
+            document.getElementById('withdraw-btn').disabled = true;
+        }
+
+
+        // claim clown area
+        const clown_price = await contract.clownPrice();
+        const clownPointsBN = new BigNumber(clown_points);
+        const clownPriceBN = new BigNumber(clown_price);
+        if (clownPointsBN.isGreaterThanOrEqualTo(clownPriceBN)) {
+            this.updateElement('need-more-points-message', '');
+            this.updateElement('claim-clown-message', `You can claim <strong>${clownPointsBN.dividedBy(clownPriceBN).toNumber() | 0}</strong> 🤡!`);
+            document.getElementById('claim-clown-btn').disabled = false;
+        } else {
+            this.updateElement('need-more-points-message', `You need <strong>${this.toClownPoints(clownPriceBN.minus(clownPointsBN))}</strong> points to claim a clown.`);
+            this.updateElement('claim-clowns-message', '');
+            document.getElementById('claim-clown-btn').disabled = true;
+        }
+
+        const clownCount = (await contract.balanceOf(account)).toNumber();
+        for (let i=this.clowns.length; i<clownCount; ++i) {
+            const tokenId = (await contract.tokenOfOwnerByIndex(account, i)).toNumber();
+            const x = (Math.random() * this.TENT_SIZE) | 0;
+            const y = (Math.random() * this.TENT_SIZE) | 0;
+            const r = Math.random() * Math.PI * 2;
+
+            const el = document.createElement('span');
+            el.classList.add('clown');
+
+            document.getElementById('clown-tent').appendChild(el);
+            this.clowns.push({tokenId, x, y, r});
         }
     },
 
@@ -170,8 +272,8 @@ const App = {
         const clown_price    = await contract.clownPrice();
         const total_clowns   = await contract.totalSupply();
 
-        this.updateElement('total-invested', this.toBch(total_invested).toString());
-        this.updateElement('clown-price',    this.toClownPoints(clown_price).toString());
+        this.updateElement('total-invested', Number.parseFloat(this.toBch(total_invested).toFixed(4)));
+        this.updateElement('clown-price',    Number.parseFloat(this.toClownPoints(clown_price).toFixed(4)));
         this.updateElement('total-clowns',   total_clowns.toString());
     },
 
@@ -250,4 +352,17 @@ const App = {
 
 document.addEventListener("DOMContentLoaded", () => {
     App.init();
+});
+
+let timer;
+
+document.addEventListener('input', e => {
+  const el = e.target;
+
+  if( el.matches('[data-color]') ) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      document.documentElement.style.setProperty(`--color-${el.dataset.color}`, el.value);
+    }, 100)
+  }
 });

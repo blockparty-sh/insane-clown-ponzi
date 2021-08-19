@@ -27,19 +27,19 @@
             -->
 
             <div class="header-item">
-                <span id="bch-balance">0.02819832</span>💰
+                <span id="bch-balance"></span>💰
             </div>
 
             <div class="header-item">
-                <span id="invested">0.1</span> 🏦
+                <span id="invested"></span> 🏦
             </div>
 
             <div class="header-item">
-                <span id="clown-points">43292</span> 📊
+                <span id="clown-points"></span> 🧠
             </div>
 
             <div class="header-item">
-                <span id="clown-balance">4</span> 🤡
+                <span id="clown-balance"></span> 🤡
             </div>
 
             <div class="header-item" style="margin: -0.5rem; margin-left: 1rem">
@@ -47,33 +47,94 @@
             </div>
         </div>
 
-
-        <section>
-            <h1>Insane Clown Ponzi 🤡</h1>
-        </section>
-
-        <section>
-            <p>
-                <a href="help.html">Instructions / Help!</a>
-                <br>
-                <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>
-            </p>
-        </section>
-
-        <div id="deposit-pane">
-            <input type="number" id="deposit-amount" value="0.01">
-            <button id="deposit-btn">Deposit</button>
-            <button id="withdraw-btn">Withdraw</button>
-        </section>
-
-        <div id="total-stats-pane">
-            <h2>total stats</h2>
-            <div id="total-invested"></div>
-            <div id="clown-price"></div>
-            <div id="total-clowns"></div>
+        <div id="title-pane" class="pane">
+            <div class="card">
+                <h1>Insane Clown Ponzi 🤡</h1>
+                <p>
+                    <a href="help.html">Instructions / Help!</a>
+                    <br>
+                    <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>
+                </p>
+            </div>
         </div>
 
-        <div id="modal">
+        <div id="clown-tent" class="pane">
+        </div>
+
+        <div id="deposit-pane" class="pane">
+            <div class="card">
+                <h2>Deposit 🏦</h2>
+                <p>Depositing BCH will allow you to enter into Ponzi scheme</p>
+                <label class="input">
+                    <input class="input__field" type="number" placeholder=" " id="deposit-amount">
+                    <span class="input__label">BCH</span>
+                </label>
+                <div class="button-group">
+                    <div class="btn-wrapper" id="deposit-btn">
+                        <div class="btn">
+                            <span>DEPOSIT</span>
+                            <span><img src="img/btn.svg"></span> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="withdraw-pane" class="pane">
+            <div class="card">
+                <h2>Withdraw 💰</h2>
+                <p><span id="withdraw-message"></span></p>
+                <div class="button-group">
+                    <div class="btn-wrapper" id="withdraw-btn">
+                        <div class="btn">
+                            <span>WITHDRAW</span>
+                            <span><img src="img/btn.svg"></span> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="claim-clown-pane" class="pane">
+            <div class="card">
+                <h2>Claim 🤡!</h2>
+                <p>
+                    <span id="claim-clown-message"></span>
+                    <span id="need-more-points-message"></span>
+                </p>
+
+                <div class="button-group">
+                    <div class="btn-wrapper" id="claim-clown-btn">
+                        <div class="btn">
+                            <span>CLAIM</span>
+                            <span><img src="img/btn.svg"></span> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="total-stats-pane" class="pane">
+            <div class="card">
+                <h2>🌍 Stats</h2>
+                <table>
+                    <tr>
+                        <td>Strength of Ponzi:</td>
+                        <td><strong><span id="total-invested"></span> BCH</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Next 🤡 Price:</td>
+                        <td><strong><span id="clown-price"></span> 🧠</strong></td>
+                    </tr>
+                    <tr>
+                        <td>🤡 Alive:</td>
+                        <td><strong><span id="total-clowns"></span></strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" id="modal">
             <div id="modal-content">
                 <div id="modal-close">X</div>
                 <h2 id="modal-title"></h2>
