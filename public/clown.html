@@ -52,6 +52,12 @@
             </div>
         </div>
 
+        <div id="go-back-pane" class="pane">
+            <div class="card">
+                <a id="go-back-link" href="index.html">⬅️ Go Back</a>
+            </div>
+        </div>
+
         <div id="full-clown-pane" class="pane">
             <div class="card">
                 <h2>🤡 Information</h2>
@@ -60,6 +66,32 @@
                 <span class="clown-quote" id="full-clown-quote"></span>
                 <br>
                 <object type="image/svg+xml" data="img/clown.svg" id="full-clown-image" data-clown-id="${clown.tokenId}"></object>
+            </div>
+        </div>
+
+        <div id="transfer-clown-pane" class="pane">
+            <div class="card">
+                <h2>Transfer 🤡</h2>
+                <p id="transfer-msg">Want to say goodbye? Send your 🤡 to a more loving home.</p>
+                <label class="input">
+                    <input class="input__field" type="text" placeholder=" " id="transfer-address">
+                    <span class="input__label">Address</span>
+                </label>
+                <div class="button-group">
+                    <div class="btn-wrapper" id="transfer-btn">
+                        <div class="btn">
+                            <span>TRANSFER</span>
+                            <span><img src="img/btn.svg"></span> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="clown-owner-pane" class="pane">
+            <div class="card">
+                <h2>Owner Information</h2>
+                <span id="owner-address"></span><br>
             </div>
         </div>
 

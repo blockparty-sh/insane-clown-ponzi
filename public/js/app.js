@@ -120,32 +120,35 @@ const App = {
         document.getElementById('help-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
             that.showModal('Help', `<div class="scrollable-wrapper">
-                <h2>Introduction / What is a Ponzi?</h2>
+                <h3>Introduction / What is a Ponzi?</h3>
                 <p>Hello and welcome to Insane Clown Ponzi, the first Ponzi DeFI NFT dApp on smartBCH. A "Ponzi" is an advanced financial technique in which your deposits pay past investors, and future investors pay you. This can lead to GIGANTIC gains if you are able to invest before others do, however all money you deposit is effectively immediately gone.</p>
 
-                <h2>How do I make money with this?</h2>
-                <p>You must deposit BCH, at this point the BCH is distributed to all others who have invested in the ponzi before you. Also, a 10% fee is applied, of which 5% is distributed amongst all 🤡 and the other 5% is sent to the first who invested in the ponzi.</p>
+                <h3>How do I make money with this?</h3>
+                <p>You must deposit BCH, at this point the BCH is distributed to all others who have invested in the Ponzi before you. a 10% fee is applied, of which 5% is distributed amongst all 🤡 and the other 5% is sent to the first who invested in the ponzi.</p>
 
                 <p>When others invest in the Ponzi scheme, you will receive a cut of their deposit proportional to your investment in the Ponzi compared to the total Ponzi size, as well as 🧠. This provides an incentive for you to convince others that this is a good idea. Your balance can be withdrawn at any time by clicking the "WITHDRAW" button. There is no minimum to withdraw, and this will not affect your 🧠.</p>
 
                 <p>Once you save enough brain you can start claiming 🤡. The 🤡 will appear in your tent and start dancing. The 🤡 receive 50% of the fees, so if you want to make the most money you will want to claim your 🤡 right away. Another added benefit, is that by the introduction of a collectible NFT into this Ponzi scheme, it allows others to speculate on the ponzi scheme's fees without actually investing in the Ponzi scheme itself, only by buying 🤡 on the secondary market. This innovation is only possible with really smart contracts.</p>
 
-                <h2>🤡 Features</h2> 
+                <h3>🤡 Features</h3> 
                 <p>As stated above, 🤡 enable you to receive fees from future investments. But, that's not all. 🤡 also each have their own unique design, name, and they come with a unique motivational quote. In addition, you can watch all of your 🤡 dance in the circus tent on the homepage. They are happy now.</p>
 
-                <h2>🤡 Bonding Curve</h2>
-                <p>🤡 supply is limited by the amount of 🧠 one is able to acquire, and the price of 🤡 increases by 1/2021 each time one is purchased. This is known as a bonding curve and is a pillar of 21st century mathematics. You can calculate future 🤡 prices by this formula 0.01 * ((1 + 1/2021) ** i) where 0.01 is referring to the price in BCH of the first 🤡 and i is the index of the next 🤡 to purchase.</p>
+                <h3>🤡 Bonding Curve</h3>
+                <p>🤡 supply is limited by the amount of 🧠 one is able to acquire, and the price of 🤡 increases by 1/2021 each time one is purchased. This is known as a bonding curve and is a pillar of 21st century mathematics. You can calculate future 🤡 prices by this formula 0.01 * ((1 + 1/2021) ** i) where 0.01 is referring to the price in BCH of the first 🤡 and i is the index of the next 🤡 to purchase. </p>
 
-                <h2>Secondary 🤡 Market</h2>
-                <h3>Buying 🤡</h3>
+                <h3>Secondary 🤡 Market</h3>
+                <h4>Buying 🤡</h4>
                 <p>You may think this is a great idea, but you do not want to invest in a Ponzi scheme, however, you do want to speculate on the future investments into the Ponzi scheme. This is what tokenizing 🤡 enables. You may want to purchase 🤡 from others in order to receive the fees they receive, or you may want to part with your 🤡 in order to invest more in the Ponzi. The possibilities are endless.</p>
 
-                <h3>Selling 🤡</h2>
-                <p>Currently there is not an NFT marketplace on smartBCH. However, one can trade in a p2p fashion via Telegram or something similar.</p>
+                <h4>Selling 🤡</h4>
+                <p>Currently there is not an NFT marketplace on smartBCH. However, one can trade in a p2p fashion via Telegram or something similar. You can click on the 🤡 symbol in the header and then click on the name of the 🤡 you want to sell. This will show you a panel that allows you to transfer a 🤡 to another address. Be sure to check the address is correct.</p>
             </div>`);
         });
 
         const player = document.getElementById('bg-audio-player');
+        if (localStorage.getItem('audio-play') === "false") {
+            player.pause();
+        }
         if (player.paused) {
             document.getElementById('audio-item').innerHTML = '🔇';
         }
@@ -155,9 +158,11 @@ const App = {
             if (player.paused) {
                 document.getElementById('audio-item').innerHTML = '🔈';
                 player.play();
+                localStorage.setItem('audio-play', true);
             } else {
                 document.getElementById('audio-item').innerHTML = '🔇';
                 player.pause();
+                localStorage.setItem('audio-play', false);
             }
         });
 
@@ -267,8 +272,9 @@ const App = {
                 .multipliedBy(new BigNumber('1e18'))
                 .toFixed();
 
+            let tx = null;
 			try {
-                await web3.eth.sendTransaction({
+                tx = await web3.eth.sendTransaction({
                     ...that.transactionParams,
                     ...{
                         from,
@@ -280,7 +286,7 @@ const App = {
                 console.error(e);
             }
 
-            if (firstDeposit) {
+            if (tx && firstDeposit) {
                 that.showModal('Great, you made your first deposit!', `
                     This is great, it increased the size of the Ponzi, paid all of the past investors in BCH and 🧠, and rewarded the 🤡 too.<br>
                     NICE WORK!<br>
@@ -361,9 +367,28 @@ const App = {
                 that.clowns[i].x = clamp(that.clowns[i].x);
                 that.clowns[i].y = clamp(that.clowns[i].y);
 
-                if (Math.random() < 0.01) {
+                if (Math.random() < 0.001) {
                     that.clowns[i].r += (Math.random() - 0.5) * Math.PI;
+
+                    const sayings = [
+                        'GOT YOUR NOSE',
+                        'HONK HONK',
+                        'BOO',
+                        'GESUNDHEIT',
+                        '**SQUEAKY SQUEAKY**',
+                        'CATCH',
+                        'WHATDYA SAY?',
+                        'AYYYYYYYYE!',
+                        'FUGGETABOUTIT',
+                    ];
+                    clownEl.dataset.text = sayings[(Math.random() * sayings.length) | 0];
+                    clownEl.classList.add('showText');
+
+                    setTimeout(() => {
+                        clownEl.classList.remove('showText');
+                    }, 2000+ (Math.random() * 2000));
                 }
+
 
                 clownEl.style.transform = `translate(${that.clowns[i].x}px,${that.clowns[i].y}px) rotate(${that.clowns[i].r}rad)`;
             });
@@ -381,6 +406,56 @@ const App = {
         const name = info.name;
         const quote = info.quote;
         const colors = info.colors;
+
+        const contract = await this.getContract();
+        const owner = await contract.ownerOf(tokenId);
+
+        const that = this;
+
+        let ownedByYou = false;
+        if (window.ethereum && window.ethereum.isConnected()) {
+            const account = await this.getAccount();
+            if (owner === account) {
+                ownedByYou = true;
+                document.getElementById('transfer-clown-pane').style.display = 'block';
+
+                document.getElementById('transfer-btn').addEventListener('click', async function(evt) {
+                    evt.preventDefault();
+
+                    const to = document.getElementById('transfer-address').value;
+
+                    let tx = null;
+                    try {
+                        tx = await contract.transfer(to, tokenId, {
+                            ...that.transactionParams,
+                            ...{
+                                from: account,
+                            },
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
+
+                    if (tx) {
+                        console.log(tx);
+                        that.showModal(`🤡 ${name} Transferred Successfully`, `
+                            Oh how everything can change in the blink of an eye.<br>
+                            Goodbye dear friend ${name}.<br>
+                            <br>
+                            ${quote}
+                            <br>
+                            <br>
+                            <a href="https://www.smartscan.cash/transaction/${tx.tx}">View TX on Explorer</a>
+                        `);
+                    }
+                });
+            }
+        }
+
+        if (! ownedByYou) {
+            document.getElementById('clown-owner-pane').style.display = 'block';
+            this.updateElement('owner-address', `<a href="https://smartscan.cash/address/${owner}">${owner}</a>`);
+        }
 
         this.updateElement('full-clown-name', name);
         this.updateElement('full-clown-quote', quote);
@@ -458,7 +533,6 @@ const App = {
             }
         }
 
-
         // claim clown area
         if (document.getElementById('claim-clown-pane')) {
             const clown_price = await contract.clownPrice();
@@ -470,7 +544,7 @@ const App = {
                 document.getElementById('claim-clown-btn').classList.remove('btn-disabled');
                 document.getElementById('claim-clown-pane').querySelector('.card').classList.add('pulser');
             } else {
-                this.updateElement('need-more-points-message', `You need <strong>${Number.parseFloat(this.toClownPoints(clownPriceBN.minus(clownPointsBN))).toFixed(4)}</strong> points to claim a clown.`);
+                this.updateElement('need-more-points-message', `You need an additional <strong>${Number.parseFloat(this.toClownPoints(clownPriceBN.minus(clownPointsBN))).toFixed(4)}</strong> 🧠 to claim a 🤡.`);
                 this.updateElement('claim-clown-message', '');
                 document.getElementById('claim-clown-btn').classList.add('btn-disabled');
                 document.getElementById('claim-clown-pane').querySelector('.card').classList.remove('pulser');
@@ -492,6 +566,7 @@ const App = {
             if (document.getElementById('clown-tent')) {
                 const el = document.createElement('span');
                 el.classList.add('clown');
+                el.dataset.text = name;
 
                 document.getElementById('clown-tent').appendChild(el);
             }
