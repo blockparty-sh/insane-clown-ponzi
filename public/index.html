@@ -76,7 +76,7 @@
                 <h2>Deposit 🏦</h2>
                 <p>Depositing BCH will allow you to enter into Ponzi scheme</p>
                 <label class="input">
-                    <input class="input__field" type="number" placeholder=" " id="deposit-amount">
+                    <input class="input__field" type="number" placeholder=" " id="deposit-amount" min="0.001">
                     <span class="input__label">BCH</span>
                 </label>
                 <div class="button-group">
@@ -167,5 +167,11 @@
         <audio id="bg-audio-player" autoplay loop>
             <source src="audio/bg.mp3" type="audio/mpeg" />
         </audio>
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                await App.init();
+                await App.initMainApp();
+            });
+        </script>
     </body>
 </html>

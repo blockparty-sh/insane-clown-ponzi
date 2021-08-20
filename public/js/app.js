@@ -161,6 +161,7 @@ const App = {
         document.getElementById('source-code-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
             that.showModal('Source Code', `
+                Insane Clown Ponzi is Open Source, so if you want to see how it works, or improve it in some way please come and check it out.
                 <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>
             `);
         });
@@ -184,7 +185,7 @@ const App = {
             let html = '<div class="scrollable-wrapper">';
             that.clowns.forEach((clown) => {
                 html += `
-                    <div class="scrollable-row">
+                    <div class="scrollable-row" data-clown-id="${clown.tokenId}">
                         <div class="scrollable-col">
                             <span class="clown-name">${clown.name}</span><br>
                             <span class="clown-quote">${clown.quote}</span>
@@ -196,6 +197,12 @@ const App = {
             });
             html += '</table></div>';
             that.showModal('Your 🤡 Collection', html);
+
+            document.querySelectorAll('#modal .scrollable-row').forEach((el) => {
+                el.addEventListener('click', function() {
+                    window.location.href = `clown.html?tokenId=${el.dataset.clownId}`;
+                });
+            });
 
             that.clowns.forEach((clown) => {
                 const el = document.querySelector(`.clown-image[data-clown-id="${clown.tokenId}"]`);
@@ -222,10 +229,21 @@ const App = {
                 });
             });
         });
+    },
+
+    // for index.html
+    initMainApp: async function() {
+        const that = this;
+        const contract = await this.getContract();
 
         // FORM BUTTONS
         document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
+
+            if (Number.parseFloat(document.getElementById('deposit-amount').value || 0) < 0.001) {
+                that.showModal('Error: Too small of deposit', '<p>The minimum deposit size is 0.001 BCH</p>');
+                return;
+            }
 
             const from = await that.getAccount();
 
@@ -310,6 +328,42 @@ const App = {
         }, 100);
     },
 
+    // for clown.html
+    initClownApp: async function() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+
+        const tokenId = Number.parseInt(params.tokenId);
+
+        const info = Clown.getInfo(tokenId);
+        const name = info.name;
+        const quote = info.quote;
+        const colors = info.colors;
+
+        this.updateElement('full-clown-name', name);
+        this.updateElement('full-clown-quote', quote);
+
+        const el = document.getElementById('full-clown-image');
+        const s = el.contentDocument;
+
+        const m = [
+            {sel: '.st53', key: 'hair'},
+            {sel: '.st56', key: 'eye'},
+            {sel: '.st54', key: 'face'},
+            {sel: '.st39', key: 'forehead'},
+            {sel: '.st24', key: 'face_shadow'},
+            {sel: '.st55', key: 'blush'},
+            {sel: '.st15', key: 'nose_lip'},
+            {sel: '.st16', key: 'upper_nose_lip'},
+        ];
+
+        for (let o of m) {
+            s.querySelectorAll(o.sel).forEach((g) => {
+                g.style.fill = colors[o.key];
+            });
+        }
+    },
+
     toBch:         function (v) { return new BigNumber(v.toString()).dividedBy('1e18'); },
     toClownPoints: function (v) { return this.toBch(v.toString()).multipliedBy(3976); },
 
@@ -334,27 +388,31 @@ const App = {
         this.updateElement('clown-balance', clown_balance.toString());
 
         // withdraw pane
-        if (new BigNumber(bch_balance).isGreaterThan(0)) {
-            this.updateElement('withdraw-message', `You can withdraw <strong>${this.toBch(bch_balance.toString()).toString()} BCH</strong> now`);
-            document.getElementById('withdraw-btn').disabled = false;
-        } else {
-            this.updateElement('withdraw-message', '');
-            document.getElementById('withdraw-btn').disabled = true;
+        if (document.getElementById('withdraw-pane')) {
+            if (new BigNumber(bch_balance).isGreaterThan(0)) {
+                this.updateElement('withdraw-message', `You can withdraw <strong>${this.toBch(bch_balance.toString()).toString()} BCH</strong> now`);
+                document.getElementById('withdraw-btn').disabled = false;
+            } else {
+                this.updateElement('withdraw-message', '');
+                document.getElementById('withdraw-btn').disabled = true;
+            }
         }
 
 
         // claim clown area
-        const clown_price = await contract.clownPrice();
-        const clownPointsBN = new BigNumber(clown_points);
-        const clownPriceBN = new BigNumber(clown_price);
-        if (clownPointsBN.isGreaterThanOrEqualTo(clownPriceBN)) {
-            this.updateElement('need-more-points-message', '');
-            this.updateElement('claim-clown-message', `You can claim <strong>${clownPointsBN.dividedBy(clownPriceBN).toNumber() | 0}</strong> 🤡!`);
-            document.getElementById('claim-clown-btn').disabled = false;
-        } else {
-            this.updateElement('need-more-points-message', `You need <strong>${this.toClownPoints(clownPriceBN.minus(clownPointsBN))}</strong> points to claim a clown.`);
-            this.updateElement('claim-clowns-message', '');
-            document.getElementById('claim-clown-btn').disabled = true;
+        if (document.getElementById('claim-clown-pane')) {
+            const clown_price = await contract.clownPrice();
+            const clownPointsBN = new BigNumber(clown_points);
+            const clownPriceBN = new BigNumber(clown_price);
+            if (clownPointsBN.isGreaterThanOrEqualTo(clownPriceBN)) {
+                this.updateElement('need-more-points-message', '');
+                this.updateElement('claim-clown-message', `You can claim <strong>${clownPointsBN.dividedBy(clownPriceBN).toNumber() | 0}</strong> 🤡!`);
+                document.getElementById('claim-clown-btn').disabled = false;
+            } else {
+                this.updateElement('need-more-points-message', `You need <strong>${this.toClownPoints(clownPriceBN.minus(clownPointsBN))}</strong> points to claim a clown.`);
+                this.updateElement('claim-clowns-message', '');
+                document.getElementById('claim-clown-btn').disabled = true;
+            }
         }
 
         const clownCount = (await contract.balanceOf(account)).toNumber();
@@ -369,10 +427,13 @@ const App = {
             const quote = info.quote;
             const colors = info.colors;
 
-            const el = document.createElement('span');
-            el.classList.add('clown');
+            if (document.getElementById('clown-tent')) {
+                const el = document.createElement('span');
+                el.classList.add('clown');
 
-            document.getElementById('clown-tent').appendChild(el);
+                document.getElementById('clown-tent').appendChild(el);
+            }
+
             this.clowns.push({tokenId, x, y, r, name, quote, colors});
         }
     },
@@ -462,10 +523,6 @@ const App = {
     },
 
 };
-
-document.addEventListener("DOMContentLoaded", () => {
-    App.init();
-});
 
 let timer;
 

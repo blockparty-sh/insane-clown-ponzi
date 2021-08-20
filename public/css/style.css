@@ -247,6 +247,19 @@ a:hover {
     transform: skew(0deg, 0.5deg);
 }
 
+#full-clown-pane {
+    z-index: 101;
+    position: absolute;
+    top: 60px;
+    left: calc(50vw - 700px / 2);
+
+    width: 700px;
+}
+
+#full-clown-pane .card {
+    transform: skew(0deg, 0.5deg);
+}
+
 .scrollable-wrapper {
     width: 100%;
     height: 400px;
@@ -257,6 +270,7 @@ a:hover {
     display: flex;
     width: 100%;
     padding: 1rem 0rem;
+    cursor: pointer;
 }
 
 .scrollable-row:nth-child(odd) {
@@ -274,6 +288,7 @@ a:hover {
 .clown-name {
     font-size: 2rem;
     font-weight: 800;
+    color: #333!important;
 }
 
 .clown-quote {
@@ -282,7 +297,7 @@ a:hover {
 }
 
 .clown-image {
-    width: 64px;
+    width: 110px;
     height: 64px;
 }
 

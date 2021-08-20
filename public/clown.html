@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Insane Clown Ponzi</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body class="">
+        <div id="header">
+            <div class="header-item" id="help-item">
+                ❓
+            </div>
+
+            <div class="header-item" id="audio-item">
+                🔈
+            </div>
+
+            <div class="header-item" id="source-code-item">
+                🤖
+            </div>
+
+            <div class="header-item" id="bch-balance-item">
+                <span id="bch-balance"></span>💰
+            </div>
+
+            <div class="header-item" id="invested-item">
+                <span id="invested"></span> 🏦
+            </div>
+
+            <div class="header-item" id="clown-points-item">
+                <span id="clown-points"></span> 🧠
+            </div>
+
+            <div class="header-item" id="clown-balance-item">
+                <span id="clown-balance"></span> 🤡
+            </div>
+
+            <div class="header-item" style="margin: -0.5rem; margin-left: 1rem">
+                <span id="connect-to-wallet"><img src="img/connect-with-metamask.png"></span>
+            </div>
+        </div>
+
+        <div id="full-clown-pane" class="pane">
+            <div class="card">
+                <h2>🤡 Information</h2>
+                <span class="clown-name" id="full-clown-name"></span>
+                <br>
+                <span class="clown-quote" id="full-clown-quote"></span>
+                <br>
+                <object type="image/svg+xml" data="img/clown.svg" id="full-clown-image" data-clown-id="${clown.tokenId}"></object>
+            </div>
+        </div>
+
+        <div class="card" id="modal">
+            <div id="modal-content">
+                <div id="modal-close">X</div>
+                <h2 id="modal-title"></h2>
+                <div>
+                    <p id="modal-text" class="breakable"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="incorrect-network">
+            Wrong network ID<br>
+            Change network to smartBCH<br>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.4.0/web3.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@truffle/contract@4.3.25/dist/truffle-contract.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/8.0.0/bignumber.min.js"></script>
+        <script src="js/clown.js"></script>
+        <script src="js/app.js"></script>
+        <audio id="bg-audio-player" autoplay loop>
+            <source src="audio/bg.mp3" type="audio/mpeg" />
+        </audio>
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                await App.init();
+                await App.initClownApp();
+            });
+        </script>
+    </body>
+</html>
+
