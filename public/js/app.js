@@ -7,6 +7,33 @@ const App = {
     clowns: [],
     TENT_SIZE: 400,
 
+    // this should be run right away
+    initPlayer: async function() {
+        const player = document.getElementById('bg-audio-player');
+        if (localStorage.getItem('audio-play') === "false") {
+            player.pause();
+        }
+        if (localStorage.getItem('audio-play') === "true") {
+            player.play();
+        }
+        if (player.paused) {
+            document.getElementById('audio-item').innerHTML = '🔇';
+        }
+        document.getElementById('audio-item').addEventListener('click', async function(evt) {
+            evt.preventDefault();
+
+            if (player.paused) {
+                document.getElementById('audio-item').innerHTML = '🔈';
+                player.play();
+                localStorage.setItem('audio-play', true);
+            } else {
+                document.getElementById('audio-item').innerHTML = '🔇';
+                player.pause();
+                localStorage.setItem('audio-play', false);
+            }
+        });
+    },
+
     init: async function() {
         const connectToWalletEl = document.getElementById('connect-to-wallet');
 
@@ -143,27 +170,6 @@ const App = {
                 <h4>Selling 🤡</h4>
                 <p>Currently there is not an NFT marketplace on smartBCH. However, one can trade in a p2p fashion via Telegram or something similar. You can click on the 🤡 symbol in the header and then click on the name of the 🤡 you want to sell. This will show you a panel that allows you to transfer a 🤡 to another address. Be sure to check the address is correct.</p>
             </div>`);
-        });
-
-        const player = document.getElementById('bg-audio-player');
-        if (localStorage.getItem('audio-play') === "false") {
-            player.pause();
-        }
-        if (player.paused) {
-            document.getElementById('audio-item').innerHTML = '🔇';
-        }
-        document.getElementById('audio-item').addEventListener('click', async function(evt) {
-            evt.preventDefault();
-
-            if (player.paused) {
-                document.getElementById('audio-item').innerHTML = '🔈';
-                player.play();
-                localStorage.setItem('audio-play', true);
-            } else {
-                document.getElementById('audio-item').innerHTML = '🔇';
-                player.pause();
-                localStorage.setItem('audio-play', false);
-            }
         });
 
         document.getElementById('source-code-item').addEventListener('click', async function(evt) {
