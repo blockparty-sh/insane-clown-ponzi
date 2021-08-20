@@ -23,7 +23,7 @@ contract InsaneClownPonzi is ERC721Enumerable {
     uint256 private _clownPrice = 1e16; // how much bch to create a clown
 
     // this is where clown icons reside like BASE_URI.id (concat)
-    string constant BASE_URI = "ipfs whatever";
+    string constant BASE_URI = "https://insaneclownponzi.world/metadata/";
 
     constructor() ERC721("Insane Clown Ponzi", "ICP") {
         _owner = msg.sender;
@@ -44,11 +44,11 @@ contract InsaneClownPonzi is ERC721Enumerable {
             _clownPoints[_owner] = msg.value;
         } else {
             // half of fee goes to owner and half is distributed to clown holders
-            // unless there are no clowns yet, then all fees go to owner
             if (totalSupply() == 0) {
                 _bchBalances[_owner] += totalFee;
                 _clownPoints[_owner] += totalFee;
             } else {
+                // note: a bit gets burnt here prior to first clown
                 uint256 ownerFee = totalFee / 2;
                 uint256 totalClownFee = totalFee - ownerFee;
 
@@ -85,14 +85,21 @@ contract InsaneClownPonzi is ERC721Enumerable {
     }
 
     // this is where defi clown birth occurs
-    function claimClown() external {
-        require(_clownPoints[msg.sender] > _clownPrice, "ICP: Insufficent clown points");
+    function claimClown() public {
+        require(_clownPoints[msg.sender] >= _clownPrice, "ICP: Insufficent clown points");
+
         _clownPoints[msg.sender] -= _clownPrice;
         _clownPrice += _clownPrice / 2021; // advanced tokenomics bonding curve
 
         _tokenIds.increment();
         uint256 clownId = totalSupply();
         _mint(msg.sender, clownId);
+    }
+
+    function claimAllClowns() external {
+        while(_clownPoints[msg.sender] >= _clownPrice) {
+            claimClown();
+        }
     }
 
     // retrieve bch earnings

@@ -254,6 +254,10 @@ const App = {
         document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
 
+            if (document.getElementById('deposit-btn').classList.contains('btn-disabled')) {
+                return;
+            }
+
             if (! window.hasOwnProperty('ethereum')) {
                 return;
             }
@@ -272,6 +276,7 @@ const App = {
                 .multipliedBy(new BigNumber('1e18'))
                 .toFixed();
 
+            Array.from(document.getElementsByClassName('btn-wrapper')).forEach((el) => el.classList.add('btn-disabled'));
             let tx = null;
 			try {
                 tx = await web3.eth.sendTransaction({
@@ -302,6 +307,11 @@ const App = {
 
         document.getElementById('withdraw-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
+
+            if (document.getElementById('withdraw-btn').classList.contains('btn-disabled')) {
+                return;
+            }
+
             const account = await that.getAccount();
 
             const bch_balance = await contract.bchBalanceOf(account);
@@ -309,6 +319,7 @@ const App = {
                 return;
             }
 
+            Array.from(document.getElementsByClassName('btn-wrapper')).forEach((el) => el.classList.add('btn-disabled'));
             try {
 				const tx = await contract.withdraw({
 					...that.transactionParams,
@@ -326,6 +337,10 @@ const App = {
         document.getElementById('claim-clown-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
 
+            if (document.getElementById('claim-clown-btn').classList.contains('btn-disabled')) {
+                return;
+            }
+
             const account = await that.getAccount();
 
             // TODO clean up
@@ -337,6 +352,7 @@ const App = {
                 return;
             }
 
+            Array.from(document.getElementsByClassName('btn-wrapper')).forEach((el) => el.classList.add('btn-disabled'));
             try {
 				const tx = await contract.claimClown({
 					...that.transactionParams,
@@ -352,7 +368,39 @@ const App = {
             that.updateUserDetails(true);
         });
 
+        document.getElementById('claim-all-clowns-btn').addEventListener('click', async function(evt) {
+            evt.preventDefault();
 
+            if (document.getElementById('claim-all-clowns-btn').classList.contains('btn-disabled')) {
+                return;
+            }
+
+            const account = await that.getAccount();
+
+            // TODO clean up
+            const clown_points  = await contract.clownPointsOf(account);
+            const clown_price = await contract.clownPrice();
+            const clownPointsBN = new BigNumber(clown_points);
+            const clownPriceBN = new BigNumber(clown_price);
+            if (clownPointsBN.isLessThan(clownPriceBN)) {
+                return;
+            }
+
+            Array.from(document.getElementsByClassName('btn-wrapper')).forEach((el) => el.classList.add('btn-disabled'));
+            try {
+				const tx = await contract.claimAllClowns({
+					...that.transactionParams,
+					...{
+						from: account,
+					},
+				});
+			} catch (e) {
+				console.error(e);
+            }
+
+            that.updateContractDetails();
+            that.updateUserDetails();
+        });
 
         // update clown tent
         // TODO move this somewhere better
@@ -422,8 +470,13 @@ const App = {
                 document.getElementById('transfer-btn').addEventListener('click', async function(evt) {
                     evt.preventDefault();
 
+                    if (document.getElementById('transfer-btn').classList.contains('btn-disabled')) {
+                        return;
+                    }
+
                     const to = document.getElementById('transfer-address').value.trim();
 
+                    Array.from(document.getElementsByClassName('btn-wrapper')).forEach((el) => el.classList.add('btn-disabled'));
                     let tx = null;
                     try {
                         tx = await contract.transfer(to, tokenId, {
@@ -545,11 +598,13 @@ const App = {
                 this.updateElement('need-more-points-message', '');
                 this.updateElement('claim-clown-message', `You can claim <strong>${clownPointsBN.dividedBy(clownPriceBN).toNumber() | 0}</strong> 🤡!`);
                 document.getElementById('claim-clown-btn').classList.remove('btn-disabled');
+                document.getElementById('claim-all-clowns-btn').classList.remove('btn-disabled');
                 document.getElementById('claim-clown-pane').querySelector('.card').classList.add('pulser');
             } else {
                 this.updateElement('need-more-points-message', `You need an additional <strong>${Number.parseFloat(this.toClownPoints(clownPriceBN.minus(clownPointsBN))).toFixed(4)}</strong> 🧠 to claim a 🤡.`);
                 this.updateElement('claim-clown-message', '');
                 document.getElementById('claim-clown-btn').classList.add('btn-disabled');
+                document.getElementById('claim-all-clowns-btn').classList.add('btn-disabled');
                 document.getElementById('claim-clown-pane').querySelector('.card').classList.remove('pulser');
             }
         }
