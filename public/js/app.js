@@ -367,7 +367,7 @@ const App = {
                 that.clowns[i].x = clamp(that.clowns[i].x);
                 that.clowns[i].y = clamp(that.clowns[i].y);
 
-                if (Math.random() < 0.001) {
+                if (Math.random() < 0.001 / that.clowns.length) {
                     that.clowns[i].r += (Math.random() - 0.5) * Math.PI;
 
                     const sayings = [
