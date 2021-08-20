@@ -5,7 +5,7 @@ const App = {
         gasPrice: "1050000000", // 10 gwei
     },
     clowns: [],
-    TENT_SIZE: 300,
+    TENT_SIZE: 400,
 
     init: async function() {
         const connectToWalletEl = document.getElementById('connect-to-wallet');
@@ -367,7 +367,7 @@ const App = {
                 that.clowns[i].x = clamp(that.clowns[i].x);
                 that.clowns[i].y = clamp(that.clowns[i].y);
 
-                if (Math.random() < 0.001 / that.clowns.length) {
+                if (Math.random() < 0.001 / (that.clowns.length / 2)) {
                     that.clowns[i].r += (Math.random() - 0.5) * Math.PI;
 
                     const sayings = [
@@ -422,7 +422,7 @@ const App = {
                 document.getElementById('transfer-btn').addEventListener('click', async function(evt) {
                     evt.preventDefault();
 
-                    const to = document.getElementById('transfer-address').value;
+                    const to = document.getElementById('transfer-address').value.trim();
 
                     let tx = null;
                     try {
@@ -434,6 +434,9 @@ const App = {
                         });
                     } catch (e) {
                         console.error(e);
+                        if (e.toString().startsWith('Error: invalid address')) {
+                            that.showModal('Error: Invalid Address', 'Double check the address is correct and try again');
+                        }
                     }
 
                     if (tx) {

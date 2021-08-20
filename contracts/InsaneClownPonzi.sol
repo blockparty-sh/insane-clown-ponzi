@@ -33,7 +33,7 @@ contract InsaneClownPonzi is ERC721Enumerable {
     event Withdraw(address account, uint256 amount);
 
     receive() external payable {
-        require(msg.value > 1e15, "ICP: Minimum value not met");
+        require(msg.value >= 1e15, "ICP: Minimum value not met");
 
         uint256 dividend = msg.value;
         uint256 totalFee = dividend / 10;
