@@ -22,7 +22,19 @@ module.exports = {
       gas: 6721975, //from ganache-cli output
       gasPrice: 1050000000, // 1.05 gwei
       networkCheckTimeout: 999999,
-    }
+    },
+    mainnet: {
+      provider: function() {
+        return new HDWalletProvider(
+          [process.env.PRIVATE_KEY],
+          'https://smartbch.fountainhead.cash/mainnet',
+        );
+      },
+      network_id: "10000",
+      gas: 6721975, //from ganache-cli output
+      gasPrice: 1050000000, // 1.05 gwei
+      networkCheckTimeout: 999999,
+    },
   },
   plugins: ["solidity-coverage"],
   compilers: {
