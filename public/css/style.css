@@ -162,13 +162,11 @@ a:hover {
 }
 
 #clown-tent {
-    background-color: #ccc;
     width: 300px;
     height: 300px;
     position: absolute;
     left: calc(50vw - 400px / 2);
     top: 400px;
-
 }
 
 .clown {
@@ -301,6 +299,10 @@ a:hover {
     height: 64px;
 }
 
+#new-clown-image {
+    width: 50%;
+    margin-left: 25%;
+}
 
 /* modified from https://codepen.io/folaad/pen/YvmRpz */
 .btn-wrapper {
@@ -404,7 +406,8 @@ mark {
     margin-top: calc(4 * var(--size-bezel));
     border-radius: 0;
     border: 2px solid #333;
-    box-shadow: 3px 3px 3px rgba(33, 33, 33, 0.4);
+    box-shadow: 6px 6px 0px rgba(44, 44, 44, 0.9);
+    border-radius: 2px;
     transform: skew(1deg, -1deg);
 }
 .card--inverted {
@@ -484,6 +487,29 @@ button + button {
 .hidden {
     display: none;
 }
+
+@keyframes pulse {
+	0% {
+		box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+	}
+
+	50% {
+		box-shadow: 0 0 0 20px rgba(114, 97, 255, 0.4);
+	}
+
+	100% {
+		box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+	}
+}
+
+.card.pulser {
+    animation: pulse 1.66s infinite;
+}
+
+.card.pulser:hover {
+    animation: none;
+}
+
 
 @media only screen and (max-width: 1600px) {
     .pane {

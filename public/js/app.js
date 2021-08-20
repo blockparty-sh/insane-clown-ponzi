@@ -175,7 +175,7 @@ const App = {
 
         document.getElementById('invested-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            that.showModal('Invested', 'This is the total size of the Ponzi, i.e. how much total BCH has been deposited. You want this number to go up more after you deposit BCH and/or buy clowns.');
+            that.showModal('Invested', `This is the total size of the Ponzi that you have invested. Compare this with the total size of the Ponzi in the 🌍 Stats pane to get an idea of how big of a slice of the pool you have.`);
         });
 
         document.getElementById('clown-points-item').addEventListener('click', async function(evt) {
@@ -260,6 +260,9 @@ const App = {
 
             const from = await that.getAccount();
 
+            const invested = await contract.invested(from);
+            const firstDeposit = ! (new BigNumber(invested).isGreaterThan(0));
+
             const value = new BigNumber(document.getElementById('deposit-amount').value)
                 .multipliedBy(new BigNumber('1e18'))
                 .toFixed();
@@ -277,7 +280,18 @@ const App = {
                 console.error(e);
             }
 
+            if (firstDeposit) {
+                that.showModal('Great, you made your first deposit!', `
+                    This is great, it increased the size of the Ponzi, paid all of the past investors in BCH and 🧠, and rewarded the 🤡 too.<br>
+                    NICE WORK!<br>
+                    Now, you can decide to wait, or add more. Hopefully after not too long you can get your first 🤡!
+                `);
+            }
+
+            document.getElementById('deposit-amount').value = '';
+
             that.updateUserDetails();
+            that.updateContractDetails();
         });
 
         document.getElementById('withdraw-btn').addEventListener('click', async function(evt) {
@@ -329,7 +343,7 @@ const App = {
             }
 
             that.updateContractDetails();
-            that.updateUserDetails();
+            that.updateUserDetails(true);
         });
 
 
@@ -395,7 +409,7 @@ const App = {
     toBch:         function (v) { return new BigNumber(v.toString()).dividedBy('1e18'); },
     toClownPoints: function (v) { return this.toBch(v.toString()).multipliedBy(3976); },
 
-    updateUserDetails: async function() {
+    updateUserDetails: async function(showNewClown = false) {
         const account = await this.getAccount();
         const contract = await this.getContract();
 
@@ -410,6 +424,15 @@ const App = {
         const clown_points  = await contract.clownPointsOf(account);
         const invested      = await contract.invested(account);
 
+        if (document.getElementById('deposit-pane')) {
+            if (new BigNumber(invested).isGreaterThan(0)) {
+                this.updateElement('deposit-msg',  'Depositing more BCH into the Ponzi scheme will allow you to get a larger %');
+                document.getElementById('deposit-pane').querySelector('.card').classList.remove('pulser');
+            } else {
+                document.getElementById('deposit-pane').querySelector('.card').classList.add('pulser');
+            }
+        }
+
         this.updateElement('bch-balance',   Number.parseFloat(this.toBch(bch_balance.toString()).toFixed(4)));
         this.updateElement('clown-points',  Number.parseFloat(this.toClownPoints(clown_points).toFixed(4)));
         this.updateElement('invested',      Number.parseFloat(this.toBch(invested).toFixed(4)));
@@ -417,15 +440,17 @@ const App = {
 
 
         // deposit pane
-        if (window.hasOwnProperty('ethereum')) {
-            document.getElementById('deposit-btn').classList.remove('btn-disabled');
-            document.getElementById('deposit-amount').disabled = false;
+        if (document.getElementById('deposit-pane')) {
+            if (window.hasOwnProperty('ethereum')) {
+                document.getElementById('deposit-btn').classList.remove('btn-disabled');
+                document.getElementById('deposit-amount').disabled = false;
+            }
         }
 
         // withdraw pane
         if (document.getElementById('withdraw-pane')) {
             if (new BigNumber(bch_balance).isGreaterThan(0)) {
-                this.updateElement('withdraw-message', `You can withdraw <strong>${this.toBch(bch_balance.toString()).toString()} BCH</strong> now`);
+                this.updateElement('withdraw-message', `You can withdraw <strong>${Number.parseFloat(this.toBch(bch_balance.toString())).toFixed(4)} BCH</strong> now`);
                 document.getElementById('withdraw-btn').classList.remove('btn-disabled');
             } else {
                 this.updateElement('withdraw-message', '');
@@ -443,10 +468,12 @@ const App = {
                 this.updateElement('need-more-points-message', '');
                 this.updateElement('claim-clown-message', `You can claim <strong>${clownPointsBN.dividedBy(clownPriceBN).toNumber() | 0}</strong> 🤡!`);
                 document.getElementById('claim-clown-btn').classList.remove('btn-disabled');
+                document.getElementById('claim-clown-pane').querySelector('.card').classList.add('pulser');
             } else {
                 this.updateElement('need-more-points-message', `You need <strong>${Number.parseFloat(this.toClownPoints(clownPriceBN.minus(clownPointsBN))).toFixed(4)}</strong> points to claim a clown.`);
-                this.updateElement('claim-clowns-message', '');
+                this.updateElement('claim-clown-message', '');
                 document.getElementById('claim-clown-btn').classList.add('btn-disabled');
+                document.getElementById('claim-clown-pane').querySelector('.card').classList.remove('pulser');
             }
         }
 
@@ -470,6 +497,37 @@ const App = {
             }
 
             this.clowns.push({tokenId, x, y, r, name, quote, colors});
+
+            if (showNewClown) {
+                this.showModal('New 🤡 Received', `
+                    <span class="clown-name">${name}</span><br>
+                    <span class="clown-quote">${quote}</span><br>
+                    <object type="image/svg+xml" data="img/clown.svg" id="new-clown-image"></object>
+                `);
+
+                const el = document.querySelector('#new-clown-image');
+
+                el.addEventListener('load', function() {
+                    const s = el.contentDocument;
+
+                    const m = [
+                        {sel: '.st53', key: 'hair'},
+                        {sel: '.st56', key: 'eye'},
+                        {sel: '.st54', key: 'face'},
+                        {sel: '.st39', key: 'forehead'},
+                        {sel: '.st24', key: 'face_shadow'},
+                        {sel: '.st55', key: 'blush'},
+                        {sel: '.st15', key: 'nose_lip'},
+                        {sel: '.st16', key: 'upper_nose_lip'},
+                    ];
+
+                    for (let o of m) {
+                        s.querySelectorAll(o.sel).forEach((g) => {
+                            g.style.fill = colors[o.key];
+                        });
+                    }
+                });
+            }
         }
     },
 
