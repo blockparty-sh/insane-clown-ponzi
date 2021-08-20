@@ -190,12 +190,37 @@ const App = {
                             <span class="clown-quote">${clown.quote}</span>
                         </div>
                         <div class="scrollable-col align-right">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/079-clown-face.svg/1200px-079-clown-face.svg.png" class="clown-image">
+                            <object type="image/svg+xml" data="img/clown.svg" class="clown-image" data-clown-id="${clown.tokenId}"></object>
                         </div>
                     </div>`;
             });
             html += '</table></div>';
             that.showModal('Your 🤡 Collection', html);
+
+            that.clowns.forEach((clown) => {
+                const el = document.querySelector(`.clown-image[data-clown-id="${clown.tokenId}"]`);
+
+                el.addEventListener('load', function() {
+                    const s = el.contentDocument;
+
+                    const m = [
+                        {sel: '.st53', key: 'hair'},
+                        {sel: '.st56', key: 'eye'},
+                        {sel: '.st54', key: 'face'},
+                        {sel: '.st39', key: 'forehead'},
+                        {sel: '.st24', key: 'face_shadow'},
+                        {sel: '.st55', key: 'blush'},
+                        {sel: '.st15', key: 'nose_lip'},
+                        {sel: '.st16', key: 'upper_nose_lip'},
+                    ];
+
+                    for (let o of m) {
+                        s.querySelectorAll(o.sel).forEach((g) => {
+                            g.style.fill = clown.colors[o.key];
+                        });
+                    }
+                });
+            });
         });
 
         // FORM BUTTONS
@@ -338,15 +363,17 @@ const App = {
             const x = (Math.random() * this.TENT_SIZE) | 0;
             const y = (Math.random() * this.TENT_SIZE) | 0;
             const r = Math.random() * Math.PI * 2;
-            const name = "BOZO";
-            const quote = "The purpose of our lives is to be happy";
-            const picture = "";
+
+            const info = Clown.getInfo(tokenId);
+            const name = info.name;
+            const quote = info.quote;
+            const colors = info.colors;
 
             const el = document.createElement('span');
             el.classList.add('clown');
 
             document.getElementById('clown-tent').appendChild(el);
-            this.clowns.push({tokenId, x, y, r, name, quote, picture});
+            this.clowns.push({tokenId, x, y, r, name, quote, colors});
         }
     },
 
@@ -433,6 +460,7 @@ const App = {
 
         el.innerHTML = innerHTML;
     },
+
 };
 
 document.addEventListener("DOMContentLoaded", () => {
