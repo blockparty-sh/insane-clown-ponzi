@@ -45,6 +45,17 @@ const App = {
             web3 = new Web3(web3.currentProvider);
         }
 
+        if (window.ethereum) {
+            // detect Network account change
+            window.ethereum.on('chainChanged', (networkId) => {
+                window.location.reload();
+            });
+
+            window.ethereum.on('accountsChanged', (networkId) => {
+                window.location.reload();
+            });
+        }
+
         const response = await fetch('build/InsaneClownPonzi.json');
         const InsaneClownPonziArtifact = await response.json();
 
@@ -92,16 +103,6 @@ const App = {
         });
 
         if (window.ethereum) {
-            // detect Network account change
-            window.ethereum.on('chainChanged', (networkId) => {
-                checkNetwork();
-                that.updateUserDetails();
-            });
-
-            window.ethereum.on('accountsChanged', (networkId) => {
-                window.reload();
-            });
-
             if (window.ethereum.isConnected()) {
                 connectToWalletEl
                     .querySelector('img')
@@ -247,6 +248,10 @@ const App = {
         // FORM BUTTONS
         document.getElementById('deposit-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
+
+            if (! window.hasOwnProperty('ethereum')) {
+                return;
+            }
 
             if (Number.parseFloat(document.getElementById('deposit-amount').value || 0) < 0.001) {
                 that.showModal('Error: Too small of deposit', 'The minimum deposit size is 0.001 BCH');
@@ -412,7 +417,10 @@ const App = {
 
 
         // deposit pane
-        document.getElementById('deposit-btn').classList.remove('btn-disabled');
+        if (window.hasOwnProperty('ethereum')) {
+            document.getElementById('deposit-btn').classList.remove('btn-disabled');
+            document.getElementById('deposit-amount').disabled = false;
+        }
 
         // withdraw pane
         if (document.getElementById('withdraw-pane')) {
