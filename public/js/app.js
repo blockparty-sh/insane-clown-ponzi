@@ -91,30 +91,28 @@ const App = {
             document.querySelector('body').classList.remove('modal-open');
         });
 
-        if (! window.ethereum) {
-            return;
-        }
-
-        // detect Network account change
-        window.ethereum.on('chainChanged', (networkId) => {
-            checkNetwork();
-            that.updateUserDetails();
-        });
-
-        window.ethereum.on('accountChanged', (networkId) => {
-            that.updateUserDetails();
-        });
-
-        if (window.ethereum.isConnected()) {
-            connectToWalletEl
-                .querySelector('img')
-                .style.display = 'none';
-            that.updateUserDetails();
-        } else {
-            connectToWalletEl.addEventListener('click', async function(evt) {
-                evt.preventDefault();
+        if (window.ethereum) {
+            // detect Network account change
+            window.ethereum.on('chainChanged', (networkId) => {
+                checkNetwork();
                 that.updateUserDetails();
             });
+
+            window.ethereum.on('accountsChanged', (networkId) => {
+                window.reload();
+            });
+
+            if (window.ethereum.isConnected()) {
+                connectToWalletEl
+                    .querySelector('img')
+                    .style.display = 'none';
+                that.updateUserDetails();
+            } else {
+                connectToWalletEl.addEventListener('click', async function(evt) {
+                    evt.preventDefault();
+                    that.updateUserDetails();
+                });
+            }
         }
 
         // HEADER ITEMS
@@ -122,7 +120,7 @@ const App = {
             evt.preventDefault();
             that.showModal('Help', `<div class="scrollable-wrapper">
                 <h2>Introduction / What is a Ponzi?</h2>
-                <p>Hello and welcome to Insane Clown Ponzi, the first Ponzi DeFI NFT dApp on smartBCH.</p>
+                <p>Hello and welcome to Insane Clown Ponzi, the first Ponzi DeFI NFT dApp on smartBCH. A "Ponzi" is an advanced financial technique in which your deposits pay past investors, and future investors pay you. This can lead to GIGANTIC gains if you are able to invest before others do, however all money you deposit is effectively immediately gone.</p>
 
                 <h2>How do I make money with this?</h2>
                 <p>You must deposit BCH, at this point the BCH is distributed to all others who have invested in the ponzi before you. Also, a 10% fee is applied, of which 5% is distributed amongst all 🤡 and the other 5% is sent to the first who invested in the ponzi.</p>
@@ -131,14 +129,18 @@ const App = {
 
                 <p>Once you save enough brain you can start claiming 🤡. The 🤡 will appear in your tent and start dancing. The 🤡 receive 50% of the fees, so if you want to make the most money you will want to claim your 🤡 right away. Another added benefit, is that by the introduction of a collectible NFT into this Ponzi scheme, it allows others to speculate on the ponzi scheme's fees without actually investing in the Ponzi scheme itself, only by buying 🤡 on the secondary market. This innovation is only possible with really smart contracts.</p>
 
-                <h2>Interface</h2>
-                <p></p>
+                <h2>🤡 Features</h2> 
+                <p>As stated above, 🤡 enable you to receive fees from future investments. But, that's not all. 🤡 also each have their own unique design, name, and they come with a unique motivational quote. In addition, you can watch all of your 🤡 dance in the circus tent on the homepage. They are happy now.</p>
 
-                <h2>Clown Bonding Curve</h2>
-                <p>Clown supply is limited by the amount of 🧠 one is able to acquire, and the price of 🤡 increases by 1/2021 each time one is purchased. </p>
+                <h2>🤡 Bonding Curve</h2>
+                <p>🤡 supply is limited by the amount of 🧠 one is able to acquire, and the price of 🤡 increases by 1/2021 each time one is purchased. This is known as a bonding curve and is a pillar of 21st century mathematics. You can calculate future 🤡 prices by this formula 0.01 * ((1 + 1/2021) ** i) where 0.01 is referring to the price in BCH of the first 🤡 and i is the index of the next 🤡 to purchase.</p>
 
-                <h2>Buying Clowns</h2>
-                <h2>Selling Clowns</h2>
+                <h2>Secondary 🤡 Market</h2>
+                <h3>Buying 🤡</h3>
+                <p>You may think this is a great idea, but you do not want to invest in a Ponzi scheme, however, you do want to speculate on the future investments into the Ponzi scheme. This is what tokenizing 🤡 enables. You may want to purchase 🤡 from others in order to receive the fees they receive, or you may want to part with your 🤡 in order to invest more in the Ponzi. The possibilities are endless.</p>
+
+                <h3>Selling 🤡</h2>
+                <p>Currently there is not an NFT marketplace on smartBCH. However, one can trade in a p2p fashion via Telegram or something similar.</p>
             </div>`);
         });
 
@@ -167,35 +169,41 @@ const App = {
         });
         document.getElementById('bch-balance-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            that.showModal('Earnings', 'llaalalala');
+            that.showModal('Earnings', 'These are your earnings which are available for withdrawal. Ideally you will eventually be able to withdraw more than you put in initially, however this may not happen if people stop investing in the Ponzi scheme. This number could be theoretically all Bitcoin Cash ever mined if people put all of their money into Insane Clown Ponzi forever.');
         });
 
         document.getElementById('invested-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            that.showModal('Invested', 'llaalalala');
+            that.showModal('Invested', 'This is the total size of the Ponzi, i.e. how much total BCH has been deposited. You want this number to go up more after you deposit BCH and/or buy clowns.');
         });
 
         document.getElementById('clown-points-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            that.showModal('Brain Power', 'llaalalala');
+            that.showModal('Brain Power', 'You gain Brain Power 🧠 every time someone invests in Insane Clown Ponzi after you. It can be used to buy 🤡. The 🤡 price rises every time someone purchases one, so make sure you buy them as soon as you can for maximum efficiency. 50% of all fees are sent to owners of 🤡.');
         });
 
         document.getElementById('clown-balance-item').addEventListener('click', async function(evt) {
             evt.preventDefault();
-            let html = '<div class="scrollable-wrapper">';
-            that.clowns.forEach((clown) => {
-                html += `
-                    <div class="scrollable-row" data-clown-id="${clown.tokenId}">
-                        <div class="scrollable-col">
-                            <span class="clown-name">${clown.name}</span><br>
-                            <span class="clown-quote">${clown.quote}</span>
-                        </div>
-                        <div class="scrollable-col align-right">
-                            <object type="image/svg+xml" data="img/clown.svg" class="clown-image" data-clown-id="${clown.tokenId}"></object>
-                        </div>
-                    </div>`;
-            });
-            html += '</table></div>';
+            let html = '';
+
+            if (that.clowns.length === 0) {
+                html = `Oh no.. you don't have any 🤡 yet. You need to invest in Insane Clown Ponzi, then wait for others to invest. You'll see your 🧠 increasing, then you can claim a 🤡 when you have enough. Come back soon!`;
+            } else {
+                html += '<div class="scrollable-wrapper">';
+                that.clowns.forEach((clown) => {
+                    html += `
+                        <div class="scrollable-row" data-clown-id="${clown.tokenId}">
+                            <div class="scrollable-col">
+                                <span class="clown-name">${clown.name}</span><br>
+                                <span class="clown-quote">${clown.quote}</span>
+                            </div>
+                            <div class="scrollable-col align-right">
+                                <object type="image/svg+xml" data="img/clown.svg" class="clown-image" data-clown-id="${clown.tokenId}"></object>
+                            </div>
+                        </div>`;
+                });
+                html += '</table></div>';
+            }
             that.showModal('Your 🤡 Collection', html);
 
             document.querySelectorAll('#modal .scrollable-row').forEach((el) => {
@@ -241,7 +249,7 @@ const App = {
             evt.preventDefault();
 
             if (Number.parseFloat(document.getElementById('deposit-amount').value || 0) < 0.001) {
-                that.showModal('Error: Too small of deposit', '<p>The minimum deposit size is 0.001 BCH</p>');
+                that.showModal('Error: Too small of deposit', 'The minimum deposit size is 0.001 BCH');
                 return;
             }
 
@@ -271,6 +279,11 @@ const App = {
             evt.preventDefault();
             const account = await that.getAccount();
 
+            const bch_balance = await contract.bchBalanceOf(account);
+            if (! new BigNumber(bch_balance).isGreaterThan(0)) {
+                return;
+            }
+
             try {
 				const tx = await contract.withdraw({
 					...that.transactionParams,
@@ -287,7 +300,17 @@ const App = {
 
         document.getElementById('claim-clown-btn').addEventListener('click', async function(evt) {
             evt.preventDefault();
+
             const account = await that.getAccount();
+
+            // TODO clean up
+            const clown_points  = await contract.clownPointsOf(account);
+            const clown_price = await contract.clownPrice();
+            const clownPointsBN = new BigNumber(clown_points);
+            const clownPriceBN = new BigNumber(clown_price);
+            if (clownPointsBN.isLessThan(clownPriceBN)) {
+                return;
+            }
 
             try {
 				const tx = await contract.claimClown({
@@ -387,14 +410,18 @@ const App = {
         this.updateElement('invested',      Number.parseFloat(this.toBch(invested).toFixed(4)));
         this.updateElement('clown-balance', clown_balance.toString());
 
+
+        // deposit pane
+        document.getElementById('deposit-btn').classList.remove('btn-disabled');
+
         // withdraw pane
         if (document.getElementById('withdraw-pane')) {
             if (new BigNumber(bch_balance).isGreaterThan(0)) {
                 this.updateElement('withdraw-message', `You can withdraw <strong>${this.toBch(bch_balance.toString()).toString()} BCH</strong> now`);
-                document.getElementById('withdraw-btn').disabled = false;
+                document.getElementById('withdraw-btn').classList.remove('btn-disabled');
             } else {
                 this.updateElement('withdraw-message', '');
-                document.getElementById('withdraw-btn').disabled = true;
+                document.getElementById('withdraw-btn').classList.add('btn-disabled');
             }
         }
 
@@ -407,11 +434,11 @@ const App = {
             if (clownPointsBN.isGreaterThanOrEqualTo(clownPriceBN)) {
                 this.updateElement('need-more-points-message', '');
                 this.updateElement('claim-clown-message', `You can claim <strong>${clownPointsBN.dividedBy(clownPriceBN).toNumber() | 0}</strong> 🤡!`);
-                document.getElementById('claim-clown-btn').disabled = false;
+                document.getElementById('claim-clown-btn').classList.remove('btn-disabled');
             } else {
-                this.updateElement('need-more-points-message', `You need <strong>${this.toClownPoints(clownPriceBN.minus(clownPointsBN))}</strong> points to claim a clown.`);
+                this.updateElement('need-more-points-message', `You need <strong>${Number.parseFloat(this.toClownPoints(clownPriceBN.minus(clownPointsBN))).toFixed(4)}</strong> points to claim a clown.`);
                 this.updateElement('claim-clowns-message', '');
-                document.getElementById('claim-clown-btn').disabled = true;
+                document.getElementById('claim-clown-btn').classList.add('btn-disabled');
             }
         }
 

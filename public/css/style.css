@@ -302,11 +302,18 @@ a:hover {
 }
 
 
-/* from https://codepen.io/folaad/pen/YvmRpz */
+/* modified from https://codepen.io/folaad/pen/YvmRpz */
 .btn-wrapper {
   display: flex;
   justify-content: center;
   cursor: pointer;
+}
+
+.btn-disabled {
+    filter: grayscale(0.9);
+}
+.btn-disabled.btn-wrapper {
+    cursor: not-allowed;
 }
 
 .btn {

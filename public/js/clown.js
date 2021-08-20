@@ -7,7 +7,7 @@ const Clown = {
         let z = seed;
         return function() {
             z = (a * z + c) % m;
-            return z & 0xFFFFFFF3;
+            return z & 0xFFFFFFFC;
         };
     },
 
