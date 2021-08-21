@@ -1,6 +1,6 @@
 # Insane Clown Ponzi 🤡
 
-Contract Address: 0x01eFaf631Cb58e47B02a98787DCa73e4Dfe5B60D
+Contract Address: 0x1a581bdF6b5746440DDd2f8B7d613D5E21641972
 
 ## Introduction / What is a Ponzi?
 
