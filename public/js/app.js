@@ -176,7 +176,7 @@ const App = {
             evt.preventDefault();
             that.showModal('Source Code', `
                 Insane Clown Ponzi is Open Source, so if you want to see how it works, or improve it in some way please come and check it out.
-                <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>
+                <a href="https://github.com/blockparty-sh/insane-clown-ponzi">Source Code</a>. You should also join our <a href="https://t.me/insaneclownponzi">Telegram Group</a>.
             `);
         });
         document.getElementById('bch-balance-item').addEventListener('click', async function(evt) {
