@@ -83,14 +83,6 @@ const App = {
             });
         }
 
-        const response = await fetch('build/InsaneClownPonzi.json');
-        const InsaneClownPonziArtifact = await response.json();
-
-        const InsaneClownPonzi = TruffleContract(InsaneClownPonziArtifact);
-        InsaneClownPonzi.setProvider(this.web3Provider);
-
-        this.contracts.InsaneClownPonzi = InsaneClownPonzi;
-
         const that = this;
         // provide live update checking of selected network
         let lastNetworkId = null;
@@ -111,14 +103,27 @@ const App = {
             ) {
                 document.getElementById('incorrect-network').style.display = 'none';
                 that.toggleFormDisabled(false);
+                return true;
             } else {
                 document.getElementById('incorrect-network').style.display = 'initial';
                 that.toggleFormDisabled(true);
+                return false;
             }
 
             lastNetworkId = id;
         }
-        checkNetwork();
+
+        if (! await checkNetwork()) {
+            return;
+        }
+
+        const response = await fetch('build/InsaneClownPonzi.json');
+        const InsaneClownPonziArtifact = await response.json();
+
+        const InsaneClownPonzi = TruffleContract(InsaneClownPonziArtifact);
+        InsaneClownPonzi.setProvider(this.web3Provider);
+
+        this.contracts.InsaneClownPonzi = InsaneClownPonzi;
 
 
         const contract = await this.getContract();
